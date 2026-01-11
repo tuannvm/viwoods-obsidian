@@ -68,38 +68,16 @@ export interface ImportSummary {
 }
 
 export interface ViwoodsSettings {
+    // Basic settings (3)
     notesFolder: string;
-    imagesFolder: string;
-    audioFolder: string;
-    strokesFolder: string;
-    pdfFolder: string;
-    outputFormat: 'png' | 'svg' | 'both';
-    backgroundColor: string;
     includeMetadata: boolean;
     includeTimestamps: boolean;
-    includeThumbnails: boolean;
-    createIndex: boolean;
-    dateFormat: 'iso' | 'us' | 'eu';
-    filePrefix: string;
-    processWithGemini: boolean;
-    organizationMode: 'flat' | 'book';
-    skipDuplicates: boolean;
-    overwriteExisting: boolean;
-    createBackups: boolean;
-    batchSize: number;
-    enableProgressBar: boolean;
-    autoDetectChanges: boolean;
-    keepHistory: boolean;
-    maxHistoryEntries: number;
-    enablePdfExport: boolean;
-    enableSvgViewer: boolean;
-    defaultSmoothness: number;
-    defaultSvgWidth: number;
-    autoCreatePDF: boolean;
-    showSvgViewer: boolean;
-    defaultReplaySpeed: number;
-    autoCreatePdfOnImport: boolean;
-    // Auto-sync settings
+
+    // Import format (3)
+    outputFormat: 'png' | 'svg' | 'both';
+    backgroundColor: string;
+
+    // Auto-sync settings (5)
     enableAutoSync: boolean;
     sourceFolderPath: string;
     pollingIntervalMinutes: number;
