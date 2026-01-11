@@ -12,6 +12,7 @@ import { WATCHER_STATE_FILE } from '../utils/constants.js';
 // Forward declaration to avoid circular dependency
 export interface IImportWorkflow {
     processNoteFromPath(filePath: string): Promise<void>;
+    processNoteFromPathAuto(filePath: string): Promise<{ success: boolean; filename: string; pagesImported: number }>;
     getImportInProgress(): boolean;
 }
 
@@ -270,28 +271,41 @@ export class AutoSyncService {
 
         console.log(`Importing ${this.detectedChanges.length} detected changes`);
 
+        let successCount = 0;
+        let failCount = 0;
+
         for (const change of this.detectedChanges) {
             try {
-                await this.importWorkflow.processNoteFromPath(change.filePath);
+                // Use auto-import mode (skips modal dialogs, uses one-to-one import)
+                const result = await this.importWorkflow.processNoteFromPathAuto(change.filePath);
 
-                // Mark as imported
-                const knownFile = this.state.knownFiles[change.fileName];
-                if (knownFile) {
-                    knownFile.lastImported = new Date().toISOString();
+                if (result.success) {
+                    // Mark as imported
+                    const knownFile = this.state.knownFiles[change.fileName];
+                    if (knownFile) {
+                        knownFile.lastImported = new Date().toISOString();
+                    }
+                    successCount++;
+                    console.log(`Imported ${result.filename} (${result.pagesImported} pages)`);
+                } else {
+                    failCount++;
                 }
             } catch (error: any) {
                 console.error(`Failed to import ${change.fileName}:`, error);
-                new Notice(`Failed to import ${change.fileName}: ${error.message}`);
+                failCount++;
             }
         }
 
         // Clear detected changes after import
-        const importedCount = this.detectedChanges.length;
         this.detectedChanges = [];
         await this.saveState();
         this.updateStatus();
 
-        new Notice(`Imported ${importedCount} files`);
+        if (failCount > 0) {
+            new Notice(`Imported ${successCount} files, ${failCount} failed`);
+        } else {
+            new Notice(`Imported ${successCount} file${successCount > 1 ? 's' : ''}`);
+        }
     }
 
     // ========================================================================

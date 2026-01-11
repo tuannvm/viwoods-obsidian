@@ -4,6 +4,7 @@ import { App, Notice, TFolder } from 'obsidian';
 import type { ViwoodsSettings, BookResult, ImportManifest, PageChange, ImportSummary } from '../types.js';
 import { ImporterService } from './importer-service.js';
 import { PageProcessor } from './page-processor.js';
+import { OneToOneImporter } from './one-to-one-importer.js';
 import { ImportSummaryModal, EnhancedImportModal } from '../ui/modals.js';
 import { loadManifest, saveManifest, addHistoryEntry, recoverManifestFromExistingFiles, createManifestBackup, ensureFolder, analyzeChanges } from '../utils/file-utils.js';
 import { hasJSZip } from '../utils/external-libs.js';
@@ -69,12 +70,11 @@ export class ImportWorkflow {
             }
 
             let backupPath: string | null = null;
-            if (existingManifest && this.settings.createBackups) {
-                backupPath = await createManifestBackup(this.app, manifestPath, this.settings.createBackups);
-            }
+            // Note: Backups removed in simplified version
 
             let analysis: { changes: PageChange[], summary: ImportSummary } | null = null;
-            if (this.settings.autoDetectChanges && existingManifest) {
+            // Note: Auto-detect changes simplified - always analyze if manifest exists
+            if (existingManifest) {
                 analysis = await analyzeChanges(this.app, bookResult, existingManifest, this.settings);
             }
 
@@ -91,10 +91,8 @@ export class ImportWorkflow {
                 manifestPath,
                 async (summary, manifest) => {
                     const historyMessage = `Imported ${summary.newPages.length} new, ${summary.modifiedPages.length} modified pages`;
-                    addHistoryEntry(manifest, 'import', pagesToImport, historyMessage, this.settings.maxHistoryEntries);
-                    if (this.settings.createIndex) {
-                        await this.pageProcessor.createBookIndex(bookFolder, bookResult.bookName);
-                    }
+                    addHistoryEntry(manifest, 'import', pagesToImport, historyMessage, 10); // Default history entries
+                    // Note: Index creation removed in simplified version
                     await saveManifest(this.app, manifestPath, manifest, ensureFolder);
                 }
             );
@@ -148,6 +146,82 @@ export class ImportWorkflow {
         } catch (error: any) {
             console.error('Error importing from path:', error);
             new Notice(`Failed to import from ${filePath}: ${error.message}`);
+        }
+    }
+
+    /**
+     * Auto-import a note file using simplified one-to-one mode (skips modal dialogs)
+     * @param file - File object to import
+     * @returns Import result
+     */
+    async processNoteFileAuto(file: File): Promise<{ success: boolean; filename: string; pagesImported: number }> {
+        if (this.importInProgress) {
+            console.warn('Import already in progress');
+            return { success: false, filename: file.name, pagesImported: 0 };
+        }
+        this.importInProgress = true;
+        try {
+            if (!hasJSZip()) {
+                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                return { success: false, filename: file.name, pagesImported: 0 };
+            }
+
+            // Parse the .note file
+            const zip = await (window as any).JSZip.loadAsync(file);
+            const files = Object.keys(zip.files);
+            const isNewFormat = files.some((f: string) => f.includes('NoteFileInfo.json'));
+            const bookResult = await this.importerService.convertNoteToBook(zip, files, file.name, isNewFormat);
+
+            // Use OneToOneImporter for simplified import
+            const oneToOneImporter = new OneToOneImporter(this.app, this.settings);
+            const result = await oneToOneImporter.importNote(bookResult);
+
+            if (result.success) {
+                console.log(`Auto-imported ${result.filename} with ${result.pagesImported} pages`);
+                return { success: true, filename: result.filename, pagesImported: result.pagesImported };
+            } else {
+                console.error('Auto-import failed:', result.error);
+                new Notice(`Import failed: ${result.error}`);
+                return { success: false, filename: file.name, pagesImported: 0 };
+            }
+        } catch (error: any) {
+            console.error('Error in auto-import:', error);
+            new Notice(`Failed to auto-import: ${file.name}\n${error.message}`);
+            return { success: false, filename: file.name, pagesImported: 0 };
+        } finally {
+            this.importInProgress = false;
+        }
+    }
+
+    /**
+     * Auto-import a note file from an external file path (for auto-sync)
+     * @param filePath - Absolute path to the .note file
+     * @returns Import result
+     */
+    async processNoteFromPathAuto(filePath: string): Promise<{ success: boolean; filename: string; pagesImported: number }> {
+        if (this.importInProgress) {
+            console.warn('Import already in progress');
+            return { success: false, filename: filePath, pagesImported: 0 };
+        }
+
+        try {
+            // Use ExternalFileAccess to read the file
+            const fileAccess = new ExternalFileAccess();
+            const blob = await fileAccess.readFileAsBlob(filePath);
+
+            // Extract filename from path
+            const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || 'note.note';
+
+            // Create a File object from the Blob
+            const file = new File([blob], fileName, {
+                type: 'application/zip'
+            });
+
+            // Use auto-import method
+            return await this.processNoteFileAuto(file);
+        } catch (error: any) {
+            console.error('Error importing from path:', error);
+            return { success: false, filename: filePath, pagesImported: 0 };
         }
     }
 }
