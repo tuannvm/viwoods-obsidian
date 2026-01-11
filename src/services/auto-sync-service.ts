@@ -421,4 +421,31 @@ export class AutoSyncService {
     getState(): WatcherStateData {
         return { ...this.state };
     }
+
+    /**
+     * Clear all sync state (for re-importing everything)
+     * This resets known files, last scan time, and pending changes
+     */
+    async clearState(): Promise<void> {
+        console.log('Clearing sync state...');
+
+        // Reset state to initial values
+        this.state = {
+            sourceFolder: this.state.sourceFolder, // Keep the source folder
+            knownFiles: {},  // Clear all known files
+            lastScan: 0,     // Reset last scan time
+            isEnabled: this.isEnabled  // Keep enabled status
+        };
+
+        // Clear pending changes
+        this.detectedChanges = [];
+
+        // Save the cleared state
+        await this.saveState();
+
+        // Update status bar
+        this.updateStatus();
+
+        console.log('Sync state cleared');
+    }
 }

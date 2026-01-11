@@ -147,8 +147,14 @@ export class OneToOneImporter {
                 const buffer = await page.image.blob.arrayBuffer();
                 const uint8Array = new Uint8Array(buffer);
 
-                // Use vault adapter to write binary file
-                await this.app.vault.adapter.writeBinary(filepath, uint8Array);
+                // Use app.vault.createBinary() instead of adapter.writeBinary()
+                // This triggers proper Obsidian events for Notepix to detect
+                const existingFile = this.app.vault.getAbstractFileByPath(filepath);
+                if (existingFile instanceof TFile) {
+                    await this.app.vault.modifyBinary(existingFile, uint8Array);
+                } else {
+                    await this.app.vault.createBinary(filepath, uint8Array);
+                }
                 savedFiles.push(filename);
             } catch (error) {
                 console.error(`Failed to save attachment ${filename}:`, error);
@@ -164,7 +170,13 @@ export class OneToOneImporter {
                 try {
                     const buffer = await page.audio.blob.arrayBuffer();
                     const uint8Array = new Uint8Array(buffer);
-                    await this.app.vault.adapter.writeBinary(filepath, uint8Array);
+
+                    const existingFile = this.app.vault.getAbstractFileByPath(filepath);
+                    if (existingFile instanceof TFile) {
+                        await this.app.vault.modifyBinary(existingFile, uint8Array);
+                    } else {
+                        await this.app.vault.createBinary(filepath, uint8Array);
+                    }
                     savedFiles.push(filename);
                 } catch (error) {
                     console.error(`Failed to save audio ${filename}:`, error);

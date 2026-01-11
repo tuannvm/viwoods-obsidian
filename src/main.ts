@@ -4,7 +4,9 @@
 import {
     App,
     Plugin,
-    Notice
+    Notice,
+    Modal,
+    ButtonComponent
 } from 'obsidian';
 
 // Type imports
@@ -254,6 +256,39 @@ export default class ViwoodsImporterPlugin extends Plugin {
                 new Notice(message);
             }
         });
+        this.addCommand({
+            id: 'viwoods-clear-sync-state',
+            name: 'Clear sync state (re-import all)',
+            callback: async () => {
+                if (!this.autoSyncService) {
+                    new Notice('Auto-sync service not available');
+                    return;
+                }
+
+                // Get current state info
+                const state = this.autoSyncService.getState();
+                const knownFilesCount = Object.keys(state.knownFiles || {}).length;
+
+                // Confirmation notice
+                const confirmMsg = `This will clear all sync state including ${knownFilesCount} tracked files. ` +
+                    `All files will be treated as new on next scan and will be re-imported/overwritten. ` +
+                    `Continue?`;
+
+                // Show confirmation modal
+                const confirmed = await this.confirmAction(
+                    'Clear Sync State',
+                    confirmMsg,
+                    'Clear State',
+                    'Cancel'
+                );
+
+                if (confirmed) {
+                    await this.autoSyncService.clearState();
+                    new Notice('Sync state cleared. All files will be re-imported on next scan.');
+                    this.updateSyncStatusBar();
+                }
+            }
+        });
     }
 
     async startAutoSync(): Promise<void> {
@@ -265,6 +300,18 @@ export default class ViwoodsImporterPlugin extends Plugin {
         this.updateSyncStatusBar();
     }
 
+    /**
+     * Show a confirmation modal for destructive actions
+     */
+    private async confirmAction(title: string, message: string, confirmText: string, cancelText: string): Promise<boolean> {
+        return new Promise((resolve) => {
+            const modal = new ConfirmationModal(this.app, title, message, confirmText, cancelText, (confirmed) => {
+                resolve(confirmed);
+            });
+            modal.open();
+        });
+    }
+
     stopAutoSync(): void {
         this.autoSyncService?.stop();
         this.updateSyncStatusBar();
@@ -274,5 +321,56 @@ export default class ViwoodsImporterPlugin extends Plugin {
         this.autoSyncService?.stop();
         await this.autoSyncService?.start();
         this.updateSyncStatusBar();
+    }
+}
+
+/**
+ * Simple confirmation modal for destructive actions
+ */
+class ConfirmationModal extends Modal {
+    private confirmed: boolean = false;
+    private onConfirm: (confirmed: boolean) => void;
+
+    constructor(
+        app: App,
+        private title: string,
+        private message: string,
+        private confirmText: string,
+        private cancelText: string,
+        onConfirm: (confirmed: boolean) => void
+    ) {
+        super(app);
+        this.onConfirm = onConfirm;
+    }
+
+    onOpen(): void {
+        const { contentEl } = this;
+        contentEl.addClass('viwoods-confirmation-modal');
+
+        contentEl.createEl('h2', { text: this.title });
+        contentEl.createEl('p', { text: this.message });
+
+        const buttonContainer = contentEl.createDiv({ cls: 'modal-button-container' });
+
+        const confirmBtn = new ButtonComponent(buttonContainer);
+        confirmBtn.setButtonText(this.confirmText);
+        confirmBtn.setWarning();
+        confirmBtn.onClick(() => {
+            this.confirmed = true;
+            this.close();
+        });
+
+        const cancelBtn = new ButtonComponent(buttonContainer);
+        cancelBtn.setButtonText(this.cancelText);
+        cancelBtn.onClick(() => {
+            this.confirmed = false;
+            this.close();
+        });
+    }
+
+    onClose(): void {
+        const { contentEl } = this;
+        contentEl.empty();
+        this.onConfirm(this.confirmed);
     }
 }
