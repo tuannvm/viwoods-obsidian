@@ -1,6 +1,6 @@
 // settings.ts - Settings management for Viwoods Notes Importer Plugin
 
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import { ViwoodsSettings } from './types.js';
 import { DEFAULT_SETTINGS } from './utils/constants.js';
 import { ViwoodsImporterPlugin } from './main.js';
@@ -200,6 +200,54 @@ export class ViwoodsSettingTab extends PluginSettingTab {
             .addOption('iso', 'ISO (YYYY-MM-DD)').addOption('us', 'US (MM/DD/YYYY)').addOption('eu', 'EU (DD/MM/YYYY)')
             .setValue(this.plugin.settings.dateFormat).onChange(async (value: 'iso' | 'us' | 'eu') => {
                 this.plugin.settings.dateFormat = value;
+                await this.plugin.saveSettings();
+            }));
+
+        containerEl.createEl('h3', { text: 'Viwoods Source Folder & Auto-Sync' });
+
+        new Setting(containerEl).setName('Enable auto-sync').setDesc('Automatically watch a folder for Viwoods .note files and detect changes').addToggle(toggle => toggle
+            .setValue(this.plugin.settings.enableAutoSync).onChange(async (value) => {
+                this.plugin.settings.enableAutoSync = value;
+                if (value && !this.plugin.settings.sourceFolderPath) {
+                    new Notice('Please set a source folder below');
+                }
+                if (value) {
+                    await this.plugin.startAutoSync();
+                } else {
+                    this.plugin.stopAutoSync();
+                }
+                await this.plugin.saveSettings();
+            }));
+
+        new Setting(containerEl).setName('Source folder').setDesc('Path to folder containing your Viwoods .note files (outside the vault)').addText(text => text
+            .setPlaceholder('/Users/username/Documents/Viwoods')
+            .setValue(this.plugin.settings.sourceFolderPath)
+            .onChange(async (value) => {
+                this.plugin.settings.sourceFolderPath = value;
+                await this.plugin.saveSettings();
+            }));
+
+        new Setting(containerEl).setName('Polling interval').setDesc('How often to check for changes (minutes)').addSlider(slider => slider
+            .setLimits(1, 60, 1)
+            .setValue(this.plugin.settings.pollingIntervalMinutes)
+            .setDynamicTooltip()
+            .onChange(async (value) => {
+                this.plugin.settings.pollingIntervalMinutes = value;
+                await this.plugin.saveSettings();
+                if (this.plugin.settings.enableAutoSync) {
+                    await this.plugin.restartAutoSync();
+                }
+            }));
+
+        new Setting(containerEl).setName('Sync on startup').setDesc('Check for changes when Obsidian starts').addToggle(toggle => toggle
+            .setValue(this.plugin.settings.syncOnStartup).onChange(async (value) => {
+                this.plugin.settings.syncOnStartup = value;
+                await this.plugin.saveSettings();
+            }));
+
+        new Setting(containerEl).setName('Show notifications').setDesc('Show notifications when changes are detected').addToggle(toggle => toggle
+            .setValue(this.plugin.settings.showSyncNotifications).onChange(async (value) => {
+                this.plugin.settings.showSyncNotifications = value;
                 await this.plugin.saveSettings();
             }));
     }

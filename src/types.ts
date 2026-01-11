@@ -99,6 +99,12 @@ export interface ViwoodsSettings {
     showSvgViewer: boolean;
     defaultReplaySpeed: number;
     autoCreatePdfOnImport: boolean;
+    // Auto-sync settings
+    enableAutoSync: boolean;
+    sourceFolderPath: string;
+    pollingIntervalMinutes: number;
+    showSyncNotifications: boolean;
+    syncOnStartup: boolean;
 }
 
 export interface PenMapping {
@@ -110,4 +116,42 @@ export interface PenMapping {
 
 export interface PenMappings {
     [penId: number]: PenMapping;
+}
+
+// ============================================================================
+// Auto-Sync Types
+// ============================================================================
+
+/**
+ * State of a single watched file in the source folder
+ */
+export interface WatchedFileState {
+    fileName: string;
+    filePath: string;
+    lastModified: number;
+    fileSize: number;
+    hash?: string;
+    lastImported?: string;
+    bookName: string;
+}
+
+/**
+ * Persisted watcher state
+ */
+export interface WatcherStateData {
+    sourceFolder: string;
+    knownFiles: Record<string, WatchedFileState>;
+    lastScan: number;
+    isEnabled: boolean;
+}
+
+/**
+ * Detected change for import
+ */
+export interface DetectedChange {
+    fileName: string;
+    filePath: string;
+    changeType: 'new' | 'modified';
+    lastModified: number;
+    estimatedPages?: number;
 }

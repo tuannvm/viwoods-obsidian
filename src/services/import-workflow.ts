@@ -7,6 +7,7 @@ import { PageProcessor } from './page-processor.js';
 import { ImportSummaryModal, EnhancedImportModal } from '../ui/modals.js';
 import { loadManifest, saveManifest, addHistoryEntry, recoverManifestFromExistingFiles, createManifestBackup, ensureFolder, analyzeChanges } from '../utils/file-utils.js';
 import { hasJSZip } from '../utils/external-libs.js';
+import { ExternalFileAccess } from '../utils/external-file-access.js';
 
 export class ImportWorkflow {
     private app: App;
@@ -117,5 +118,36 @@ export class ImportWorkflow {
             modal.onChoose = (pages: number[]) => resolve(pages);
             modal.open();
         });
+    }
+
+    /**
+     * Process a note file from an external file path (for auto-sync)
+     * @param filePath - Absolute path to the .note file
+     */
+    async processNoteFromPath(filePath: string): Promise<void> {
+        if (this.importInProgress) {
+            new Notice('Import already in progress');
+            return;
+        }
+
+        try {
+            // Use ExternalFileAccess to read the file
+            const fileAccess = new ExternalFileAccess();
+            const blob = await fileAccess.readFileAsBlob(filePath);
+
+            // Extract filename from path
+            const fileName = filePath.split('/').pop() || filePath.split('\\').pop() || 'note.note';
+
+            // Create a File object from the Blob
+            const file = new File([blob], fileName, {
+                type: 'application/zip'
+            });
+
+            // Use existing processNoteFile method
+            await this.processNoteFile(file);
+        } catch (error: any) {
+            console.error('Error importing from path:', error);
+            new Notice(`Failed to import from ${filePath}: ${error.message}`);
+        }
     }
 }
