@@ -35,7 +35,7 @@ export interface PageData {
         blob: Blob;
         hash: string;
     };
-    stroke?: any;
+    stroke?: number[][];  // Stroke data: array of [x, y, timestamp] points
     audio?: {
         blob: Blob;
         originalName: string;
@@ -45,7 +45,7 @@ export interface PageData {
 
 export interface BookResult {
     bookName: string;
-    metadata: any;
+    metadata: Record<string, unknown>;  // Flexible metadata from note file
     pages: PageData[];
     thumbnail: Blob | null;
 }
@@ -93,7 +93,7 @@ export interface ViwoodsSettings {
     strokesFolder: string;
     pdfFolder: string;
 
-    // Import options (3)
+    // Import options (4)
     dateFormat: string;
     filePrefix: string;
     includeThumbnails: boolean;

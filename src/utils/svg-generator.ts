@@ -6,6 +6,7 @@ export function strokesToSVG(strokes: number[][], width = 1440, height = 1920): 
     if (!strokes || strokes.length === 0) return '';
     const paths: number[][][] = [];
     let currentPath: number[][] = [];
+
     for (let i = 0; i < strokes.length; i++) {
         const [x, y, timestamp] = strokes[i];
         if (i > 0 && Math.abs(timestamp - strokes[i-1][2]) > 100) {
@@ -41,7 +42,7 @@ export function smoothPoints(points: number[][], factor: number): number[][] {
     return smoothed;
 }
 
-export function smoothStrokeData(strokeData: any, smoothness: number): number[][][] {
+export function smoothStrokeData(strokeData: number[][], smoothness: number): number[][][] {
     const strokes: number[][][] = [];
     let currentStroke: number[][] = [];
     for (let i = 0; i < strokeData.length; i++) {
@@ -91,7 +92,7 @@ export function getPenStyle(penId: number, penMappings: PenMappings): { color: s
     return { color: '#000000', width: 2, opacity: 1 };
 }
 
-export function replayStrokes(svg: SVGElement, strokeData: any, smoothness: number, smoothStrokeDataFn: typeof smoothStrokeData) {
+export function replayStrokes(svg: SVGElement, strokeData: number[][], smoothness: number, smoothStrokeDataFn: typeof smoothStrokeData) {
     svg.innerHTML = '';
     const smoothedStrokes = smoothStrokeDataFn(strokeData, smoothness);
     let strokeIndex = 0;

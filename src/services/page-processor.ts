@@ -5,21 +5,33 @@ import type {
     BookResult,
     ImportManifest,
     ImportSummary,
-    ViwoodsSettings
+    ViwoodsSettings,
+    PageData
 } from '../types.js';
 import { formatDate, ensureFolder } from '../utils/file-utils.js';
 import { processImageWithBackground } from '../utils/image-utils.js';
 import { strokesToSVG } from '../utils/svg-generator.js';
 import { log } from '../utils/logger.js';
 
+// Progress modal interface (from ui/modals.ts)
+interface ProgressModal {
+    open(): void;
+    close(): void;
+    updateProgress(current: number, message: string): void;
+}
+
+type ProgressModalConstructor = new (app: App, totalPages: number) => ProgressModal;
+
 export class PageProcessor {
-    private progressModal: any;
+    private progressModal: ProgressModal | null;
+    private ProgressModalClass: ProgressModalConstructor;
 
     constructor(
         private app: App,
         private settings: ViwoodsSettings,
-        ProgressModalClass: any
+        ProgressModalClass: ProgressModalConstructor
     ) {
+        this.ProgressModalClass = ProgressModalClass;
         this.progressModal = null;
     }
 
@@ -103,7 +115,6 @@ export class PageProcessor {
         if (!page) return;
 
         try {
-            summary.newPages.length + summary.modifiedPages.length + summary.unchangedPages.length;
             const isNew = !existingManifest?.importedPages[pageNum];
             const isModified = existingManifest?.importedPages[pageNum]?.imageHash !== page.image.hash;
 
@@ -155,13 +166,13 @@ export class PageProcessor {
                 size: page.image.blob.size,
                 backgroundColor: this.settings.backgroundColor
             };
-        } catch (error: any) {
+        } catch (error: unknown) {
             log.error(`Failed to import page ${pageNum}:`, error);
             summary.errors.push({ page: pageNum, error: error.message });
         }
     }
 
-    private async saveStrokeData(stroke: any, bookName: string, pageNum: number, strokesFolder: string, shouldUpdate: boolean): Promise<void> {
+    private async saveStrokeData(stroke: number[][] | undefined, bookName: string, pageNum: number, strokesFolder: string, shouldUpdate: boolean): Promise<void> {
         const strokeFileName = `${bookName}_page_${String(pageNum).padStart(3, '0')}_strokes.json`;
         const strokePath = `${strokesFolder}/${strokeFileName}`;
         const normalizedStrokePath = normalizePath(strokePath);
@@ -176,7 +187,7 @@ export class PageProcessor {
     }
 
     private async savePageImage(
-        page: any,
+        page: PageData,
         bookName: string,
         pageNum: number,
         imagesFolder: string,
@@ -210,7 +221,8 @@ export class PageProcessor {
         }
     }
 
-    private async savePageSvg(stroke: any, bookName: string, pageNum: number, imagesFolder: string, shouldUpdate: boolean): Promise<void> {
+    private async savePageSvg(stroke: number[][] | undefined, bookName: string, pageNum: number, imagesFolder: string, shouldUpdate: boolean): Promise<void> {
+        if (!stroke) return;
         const svgContent = strokesToSVG(stroke);
         const svgName = `${bookName}_page_${String(pageNum).padStart(3, '0')}.svg`;
         const svgPath = `${imagesFolder}/${svgName}`;
@@ -224,7 +236,7 @@ export class PageProcessor {
         }
     }
 
-    private async savePageAudio(audio: any, audioFolder: string, shouldUpdate: boolean): Promise<void> {
+    private async savePageAudio(audio: { blob: Blob; name: string; originalName: string }, audioFolder: string, shouldUpdate: boolean): Promise<void> {
         const audioPath = `${audioFolder}/${audio.name}`;
         const normalizedAudioPath = normalizePath(audioPath);
         const existingAudio = this.app.vault.getAbstractFileByPath(normalizedAudioPath);
@@ -241,7 +253,7 @@ export class PageProcessor {
 
     private async buildPageContent(
         bookResult: BookResult,
-        page: any,
+        page: PageData,
         pageNum: number,
         manifest: ImportManifest,
         isNew: boolean,
@@ -260,8 +272,8 @@ export class PageProcessor {
             if (this.settings.includeTimestamps) {
                 const createTime = bookResult.metadata.createTime || bookResult.metadata.creationTime;
                 const updateTime = bookResult.metadata.upTime || bookResult.metadata.lastModifiedTime;
-                if (createTime) pageContent += `book_created: ${formatDate(createTime, this.settings.dateFormat)}\n`;
-                if (updateTime) pageContent += `book_updated: ${formatDate(updateTime, this.settings.dateFormat)}\n`;
+                if (typeof createTime === 'number') pageContent += `book_created: ${formatDate(createTime, this.settings.dateFormat)}\n`;
+                if (typeof updateTime === 'number') pageContent += `book_updated: ${formatDate(updateTime, this.settings.dateFormat)}\n`;
             }
             pageContent += `import_date: ${new Date().toISOString()}\n`;
             if (isModified) pageContent += `last_modified: ${new Date().toISOString()}\n`;

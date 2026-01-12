@@ -420,11 +420,12 @@ export class ExportModal extends Modal {
             const includeGemini = includeGeminiCheck.checked;
             this.close();
             try {
-                await this.exportBook(bookPath, format as any, includeAudio, includeGemini);
+                await this.exportBook(bookPath, format as 'pdf' | 'markdown', includeAudio, includeGemini);
                 new Notice('Export completed successfully!');
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error('Export failed:', error);
-                new Notice('Export failed: ' + error.message);
+                const message = error instanceof Error ? error.message : String(error);
+                new Notice('Export failed: ' + message);
             }
         };
         cancelBtn.onclick = () => this.close();

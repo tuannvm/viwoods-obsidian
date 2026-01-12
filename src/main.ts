@@ -39,13 +39,6 @@ import { loadJSZip, loadJsPDF } from './utils/external-libs.js';
 import { initPenMappings, getPenMappings } from './utils/pen-mapping-helpers.js';
 import { setDebugMode } from './utils/logger.js';
 
-declare global {
-    interface Window {
-        JSZip: any;
-        jspdf: any;
-    }
-}
-
 // ============================================================================
 // MAIN PLUGIN CLASS
 // ============================================================================
@@ -85,7 +78,11 @@ export default class ViwoodsImporterPlugin extends Plugin {
             this.autoSyncService = new AutoSyncService(this.app, this.settings, this.importWorkflow, this);
 
             // Initialize handlers
-            this.dragDropHandler = new DragDropHandler((file: File) => this.importWorkflow!.processNoteFile(file));
+            this.dragDropHandler = new DragDropHandler(async (file: File) => {
+                if (this.importWorkflow) {
+                    await this.importWorkflow.processNoteFile(file);
+                }
+            });
 
             // Register all commands and processors via registry
             registerCommands(this, {

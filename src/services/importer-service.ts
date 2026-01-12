@@ -10,6 +10,32 @@ import type {
 import { hashImageData } from '../utils/file-utils.js';
 import { log } from '../utils/logger.js';
 
+// Minimal type for JSZip object (loaded externally)
+interface ZipFile {
+    async(type: 'blob'): Promise<Blob>;
+    async(type: 'string'): Promise<string | Blob | ArrayBuffer>;
+}
+
+interface ZipObject {
+    file(path: string): ZipFile | null;
+    files: Record<string, unknown>;
+}
+
+interface PageResource {
+    fileName?: string;
+    resourceType?: number;
+}
+
+interface NoteMetadata extends Record<string, unknown> {
+    fileName?: string;
+    nickname?: string;
+    noteName?: string;
+    createTime?: number;
+    creationTime?: number;
+    upTime?: number;
+    lastModifiedTime?: number;
+}
+
 export class ImporterService {
     constructor(
         private app: App,
@@ -18,7 +44,7 @@ export class ImporterService {
     ) {}
 
     async convertNoteToBook(
-        zip: any,
+        zip: ZipObject,
         files: string[],
         fileName: string,
         isNewFormat: boolean
@@ -37,62 +63,78 @@ export class ImporterService {
     }
 
     private async convertNewFormat(
-        zip: any,
+        zip: ZipObject,
         files: string[],
         bookName: string,
         allAudioFiles: string[]
     ): Promise<BookResult> {
-        let metadata: any = {};
+        let metadata: NoteMetadata = {};
         const pages: PageData[] = [];
 
         const noteFileInfo = files.find(f => f.includes('NoteFileInfo.json'));
         if (noteFileInfo) {
-            metadata = JSON.parse(await zip.file(noteFileInfo).async('string'));
-            bookName = this.settings.filePrefix + (metadata.fileName || bookName);
-            log.debug(`Book name from metadata: ${bookName}`);
+            const file = zip.file(noteFileInfo);
+            if (file) {
+                const content = await file.async('string');
+                metadata = JSON.parse(content);
+                bookName = this.settings.filePrefix + (metadata.fileName || bookName);
+                log.debug(`Book name from metadata: ${bookName}`);
+            }
         }
 
         const pageResourceFile = files.find(f => f.includes('PageResource.json'));
         if (pageResourceFile) {
-            const pageResource = JSON.parse(await zip.file(pageResourceFile).async('string'));
-            const mainBmpFiles = pageResource.filter((r: any) => r.fileName?.includes('mainBmp'));
-            log.debug(`Processing ${mainBmpFiles.length} pages`);
+            const pageResourceFileObj = zip.file(pageResourceFile);
+            if (pageResourceFileObj) {
+                const pageResource = JSON.parse(await pageResourceFileObj.async('string')) as PageResource[];
+                const mainBmpFiles = pageResource.filter((r: PageResource) => r.fileName?.includes('mainBmp'));
+                log.debug(`Processing ${mainBmpFiles.length} pages`);
 
-            for (let i = 0; i < mainBmpFiles.length; i++) {
-                const bmpResource = mainBmpFiles[i];
-                const imageFile = files.find(f => f === bmpResource.fileName);
-                if (imageFile) {
-                    const blob = await zip.file(imageFile).async('blob');
-                    const hash = await hashImageData(blob);
-                    const pageData: PageData = { pageNum: i + 1, image: { blob, hash } };
+                for (let i = 0; i < mainBmpFiles.length; i++) {
+                    const bmpResource = mainBmpFiles[i];
+                    const imageFile = files.find(f => f === bmpResource.fileName);
+                    if (imageFile) {
+                        const imageFileObj = zip.file(imageFile);
+                        if (imageFileObj) {
+                            const blob = await imageFileObj.async('blob');
+                            const hash = await hashImageData(blob);
+                            const pageData: PageData = { pageNum: i + 1, image: { blob, hash } };
 
-                    // Extract stroke data if enabled
-                    if (this.settings.outputFormat === 'svg' || this.settings.outputFormat === 'both' || this.settings.enableSvgViewer) {
-                        const pathFiles = pageResource.filter((r: any) => r.resourceType === 7);
-                        const pathResource = pathFiles[i];
-                        if (pathResource) {
-                            const pathFile = files.find(f => f.includes(pathResource.fileName));
-                            if (pathFile) {
-                                pageData.stroke = JSON.parse(await zip.file(pathFile).async('string'));
+                            // Extract stroke data if enabled
+                            if (this.settings.outputFormat === 'svg' || this.settings.outputFormat === 'both' || this.settings.enableSvgViewer) {
+                                const pathFiles = pageResource.filter((r: PageResource) => r.resourceType === 7);
+                                const pathResource = pathFiles[i];
+                                if (pathResource && pathResource.fileName) {
+                                    const pathFile = files.find(f => f.includes(pathResource.fileName));
+                                    if (pathFile) {
+                                        const pathFileObj = zip.file(pathFile);
+                                        if (pathFileObj) {
+                                            pageData.stroke = JSON.parse(await pathFileObj.async('string'));
+                                        }
+                                    }
+                                }
                             }
+
+                            // Extract audio
+                            const pageNum = i + 1;
+                            const audioFile = this.findAudioFile(files, allAudioFiles, pageNum);
+                            if (audioFile) {
+                                const audioFileObj = zip.file(audioFile);
+                                if (audioFileObj) {
+                                    const audioBlob = await audioFileObj.async('blob');
+                                    const audioFileName = audioFile.split('/').pop() || audioFile.split('\\').pop();
+                                    pageData.audio = {
+                                        blob: audioBlob,
+                                        originalName: audioFileName || '',
+                                        name: `${bookName}_page_${String(pageNum).padStart(3, '0')}_audio.m4a`
+                                    };
+                                    log.debug(`Added audio for page ${pageNum}: ${audioFile}`);
+                                }
+                            }
+
+                            pages.push(pageData);
                         }
                     }
-
-                    // Extract audio
-                    const pageNum = i + 1;
-                    const audioFile = this.findAudioFile(files, allAudioFiles, pageNum);
-                    if (audioFile) {
-                        const audioBlob = await zip.file(audioFile).async('blob');
-                        const audioFileName = audioFile.split('/').pop() || audioFile.split('\\').pop();
-                        pageData.audio = {
-                            blob: audioBlob,
-                            originalName: audioFileName || '',
-                            name: `${bookName}_page_${String(pageNum).padStart(3, '0')}_audio.m4a`
-                        };
-                        log.debug(`Added audio for page ${pageNum}: ${audioFile}`);
-                    }
-
-                    pages.push(pageData);
                 }
             }
         }
@@ -101,8 +143,11 @@ export class ImporterService {
         if (this.settings.includeThumbnails) {
             const thumbnailFile = files.find(f => f.includes('Thumbnail') || f.includes('thumbnai'));
             if (thumbnailFile) {
-                thumbnail = await zip.file(thumbnailFile).async('blob');
-                log.debug('Found thumbnail');
+                const thumbnailFileObj = zip.file(thumbnailFile);
+                if (thumbnailFileObj) {
+                    thumbnail = await thumbnailFileObj.async('blob');
+                    log.debug('Found thumbnail');
+                }
             }
         }
 
@@ -111,52 +156,65 @@ export class ImporterService {
     }
 
     private async convertOldFormat(
-        zip: any,
+        zip: ZipObject,
         files: string[],
         bookName: string,
         allAudioFiles: string[]
     ): Promise<BookResult> {
-        let metadata: any = {};
+        let metadata: NoteMetadata = {};
         const pages: PageData[] = [];
 
         const notesBeanFile = files.find(f => f.includes('NotesBean.json'));
         if (notesBeanFile) {
-            metadata = JSON.parse(await zip.file(notesBeanFile).async('string'));
-            bookName = this.settings.filePrefix + (metadata.nickname || metadata.noteName || bookName);
-            log.debug(`Book name from old format metadata: ${bookName}`);
+            const notesBeanFileObj = zip.file(notesBeanFile);
+            if (notesBeanFileObj) {
+                const content = await notesBeanFileObj.async('string');
+                metadata = JSON.parse(content);
+                bookName = this.settings.filePrefix + (metadata.nickname || metadata.noteName || bookName);
+                log.debug(`Book name from old format metadata: ${bookName}`);
+            }
         }
 
         const noteListFile = files.find(f => f.includes('NoteList.json'));
         if (noteListFile) {
-            const noteList = JSON.parse(await zip.file(noteListFile).async('string'));
-            log.debug(`Processing ${noteList.length} pages from old format`);
+            const noteListFileObj = zip.file(noteListFile);
+            if (noteListFileObj) {
+                const noteList = JSON.parse(await noteListFileObj.async('string'));
+                log.debug(`Processing ${noteList.length} pages from old format`);
 
-            for (let i = 0; i < noteList.length; i++) {
-                const page = noteList[i];
-                const imageFile = files.find(f => f === `${page.pageId}.png`);
-                if (imageFile) {
-                    const blob = await zip.file(imageFile).async('blob');
-                    const hash = await hashImageData(blob);
-                    const pageData: PageData = { pageNum: i + 1, image: { blob, hash } };
+                for (let i = 0; i < noteList.length; i++) {
+                    const page = noteList[i];
+                    const imageFile = files.find(f => f === `${page.pageId}.png`);
+                    if (imageFile) {
+                        const imageFileObj = zip.file(imageFile);
+                        if (imageFileObj) {
+                            const blob = await imageFileObj.async('blob');
+                            const hash = await hashImageData(blob);
+                            const pageData: PageData = { pageNum: i + 1, image: { blob, hash } };
 
-                    const pageNum = i + 1;
-                    const audioFile = files.find(f =>
-                        (f.includes('audio') || f.endsWith('.m4a')) &&
-                        (f.includes(`${pageNum}`) || f.includes(`page${pageNum}`) || f.includes(`Page${pageNum}`))
-                    );
+                            const pageNum = i + 1;
+                            const audioFile = files.find(f =>
+                                (f.includes('audio') || f.endsWith('.m4a')) &&
+                                (f.includes(`${pageNum}`) || f.includes(`page${pageNum}`) || f.includes(`Page${pageNum}`))
+                            );
 
-                    if (audioFile) {
-                        const audioBlob = await zip.file(audioFile).async('blob');
-                        const audioFileName = audioFile.split('/').pop() || audioFile.split('\\').pop();
-                        pageData.audio = {
-                            blob: audioBlob,
-                            originalName: audioFileName || '',
-                            name: `${bookName}_page_${String(pageNum).padStart(3, '0')}_audio.m4a`
-                        };
-                        log.debug(`Added audio for page ${pageNum} (old format): ${audioFile}`);
+                            if (audioFile) {
+                                const audioFileObj = zip.file(audioFile);
+                                if (audioFileObj) {
+                                    const audioBlob = await audioFileObj.async('blob');
+                                    const audioFileName = audioFile.split('/').pop() || audioFile.split('\\').pop();
+                                    pageData.audio = {
+                                        blob: audioBlob,
+                                        originalName: audioFileName || '',
+                                        name: `${bookName}_page_${String(pageNum).padStart(3, '0')}_audio.m4a`
+                                    };
+                                    log.debug(`Added audio for page ${pageNum} (old format): ${audioFile}`);
+                                }
+                            }
+
+                            pages.push(pageData);
+                        }
                     }
-
-                    pages.push(pageData);
                 }
             }
         }

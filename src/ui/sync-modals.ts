@@ -43,9 +43,15 @@ export class SourceFolderPickerModal extends Modal {
 }
 
 export class SyncStatusModal extends Modal {
-    private getStatusFn: any;
+    private getStatusFn: () => {
+        isEnabled: boolean;
+        sourceFolder: string;
+        pendingChanges: number;
+        knownFilesCount: number;
+        lastScan: number;
+    };
 
-    constructor(app: App, getStatusFn: any) {
+    constructor(app: App, getStatusFn: SyncStatusModal['getStatusFn']) {
         super(app);
         this.getStatusFn = getStatusFn;
     }

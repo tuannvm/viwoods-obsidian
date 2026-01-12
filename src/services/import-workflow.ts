@@ -46,7 +46,12 @@ export class ImportWorkflow {
                 return;
             }
 
-            const zip = await (window as any).JSZip.loadAsync(file);
+            const jsZip = window.JSZip;
+            if (!jsZip) {
+                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                return;
+            }
+            const zip = await jsZip.loadAsync(file);
             const files = Object.keys(zip.files);
             const isNewFormat = files.some((f: string) => f.includes('NoteFileInfo.json'));
             const bookResult = await this.importerService.convertNoteToBook(zip, files, file.name, isNewFormat);
@@ -98,9 +103,10 @@ export class ImportWorkflow {
             );
 
             new ImportSummaryModal(this.app, summary, null).open();
-        } catch (error: any) {
+        } catch (error: unknown) {
             log.error('Error processing note file:', error);
-            new Notice(`Failed to import: ${file.name}\n${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            new Notice(`Failed to import: ${file.name}\n${message}`);
         } finally {
             this.importInProgress = false;
         }
@@ -143,9 +149,10 @@ export class ImportWorkflow {
 
             // Use existing processNoteFile method
             await this.processNoteFile(file);
-        } catch (error: any) {
+        } catch (error: unknown) {
             log.error('Error importing from path:', error);
-            new Notice(`Failed to import from ${filePath}: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            new Notice(`Failed to import from ${filePath}: ${message}`);
         }
     }
 
@@ -168,7 +175,12 @@ export class ImportWorkflow {
             }
 
             // Parse the .note file
-            const zip = await (window as any).JSZip.loadAsync(file);
+            const jsZip = window.JSZip;
+            if (!jsZip) {
+                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                return { success: false, filename: file.name, pagesImported: 0 };
+            }
+            const zip = await jsZip.loadAsync(file);
             const files = Object.keys(zip.files);
             const isNewFormat = files.some((f: string) => f.includes('NoteFileInfo.json'));
             const bookResult = await this.importerService.convertNoteToBook(zip, files, file.name, isNewFormat);
@@ -185,9 +197,10 @@ export class ImportWorkflow {
                 new Notice(`Import failed: ${result.error}`);
                 return { success: false, filename: file.name, pagesImported: 0 };
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             log.error('Error in auto-import:', error);
-            new Notice(`Failed to auto-import: ${file.name}\n${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            new Notice(`Failed to auto-import: ${file.name}\n${message}`);
             return { success: false, filename: file.name, pagesImported: 0 };
         } finally {
             this.importInProgress = false;
@@ -221,7 +234,7 @@ export class ImportWorkflow {
 
             // Use auto-import method with relative path
             return await this.processNoteFileAuto(file, relativePath);
-        } catch (error: any) {
+        } catch (error: unknown) {
             log.error('Error importing from path:', error);
             return { success: false, filename: filePath, pagesImported: 0 };
         }

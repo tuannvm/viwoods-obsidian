@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { resolve } from 'node:path';
 
 export default defineConfig({
 	resolve: {
 		alias: {
-			'obsidian': '/tests/mocks/obsidian.ts'
+			'obsidian': resolve(import.meta.dirname, 'tests/mocks/obsidian.ts')
 		}
 	},
 	test: {

@@ -90,7 +90,7 @@ jobs:
           # Commit the changes
           git add manifest.json versions.json
           git commit -m "chore: bump version to $NEW_VERSION"
-          git push origin main
+          git push origin HEAD
 
       - name: Generate changelog
         id: changelog

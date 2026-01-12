@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ocr": {
+      "command": "npx",
+      "args": ["-y", "@tuannvm/vision-mcp-server"]
+    }
+  }
+}
