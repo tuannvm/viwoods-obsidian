@@ -5,6 +5,8 @@
 1. Fork the repository
 2. Clone your fork: `git clone https://github.com/your-username/viwoods-obsidian.git`
 3. Install dependencies: `npm install`
+
+**Upstream repository:** `https://github.com/tuannvm/viwoods-obsidian.git`
 4. Create a feature branch: `git checkout -b feature/your-feature`
 
 ## Development Workflow

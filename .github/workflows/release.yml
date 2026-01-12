@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type (based on conventional commits)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Create release commit
+        run: |
+          # Create commit with bump type indicator for anotherNick/github-tag-action to detect
+          git commit --allow-empty -m "chore: release #${{ github.event.inputs.bump_type }}"
+
+      - name: Bump version and create tag
+        id: tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: ${{ github.event.inputs.bump_type }}
+          WITH_V: true
+          RELEASE_BRANCHES: main,master
+          VERBOSE: true
+
+      - name: Update manifest.json version
+        run: |
+          # Extract version number from tag (remove 'v' prefix)
+          NEW_VERSION="${{ steps.tag.outputs.new_tag }}"
+          NEW_VERSION="${NEW_VERSION#v}"
+
+          echo "Updating manifest.json to version $NEW_VERSION"
+
+          # Update manifest.json with the new version using node
+          node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+            manifest.version = '$NEW_VERSION';
+            fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, 4));
+          "
+
+          # Update versions.json
+          node version-bump.mjs
+
+          # Commit the changes
+          git add manifest.json versions.json
+          git commit -m "chore: bump version to $NEW_VERSION"
+          git push origin main
+
+      - name: Generate changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: ${{ steps.tag.outputs.previous_tag }}
+          toTag: ${{ steps.tag.outputs.new_tag }}
+          failOnError: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build release artifacts
+        run: npm run build
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.new_tag }}
+          name: Release ${{ steps.tag.outputs.new_tag }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+          files: |
+            main.js
+            manifest.json
+            styles.css
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Obsidian community (manual step)
+        run: |
+          echo "=========================================="
+          echo "Release created successfully!"
+          echo "=========================================="
+          echo ""
+          echo "Next steps (manual):"
+          echo "1. Submit plugin to Obsidian community:"
+          echo "   https://github.com/obsidianmd/obsidian-releases"
+          echo ""
+          echo "2. Create a PR to add/update your plugin in:"
+          echo "   - community-plugins.json"
+          echo ""
+          echo "3. Follow the format in existing entries"
+          echo "=========================================="

@@ -1,5 +1,6 @@
 # Viwoods Notes Importer
 
+[![CI Status](https://img.shields.io/github/actions/workflow/status/tuannvm/viwoods-obsidian/ci?branch=main&logo=github-actions&logoColor=white)](https://github.com/tuannvm/viwoods-obsidian/actions/workflows/ci.yml)
 [![Latest Release](https://img.shields.io/github/v/release/tuannvm/viwoods-obsidian?display_name=tag&logo=Dropbox&logoColor=white&color=blue)](https://github.com/tuannvm/viwoods-obsidian/releases/latest)
 [![License: 0BSD](https://img.shields.io/github/license/tuannvm/viwoods-obsidian?color=green&logo=gitbook&logoColor=white)](LICENSE)
 [![Obsidian Compatible](https://img.shields.io/badge/Obsidian-Compatible-%23483699?logo=obsidian&logoColor=white)](https://obsidian.md)

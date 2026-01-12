@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint src --ext .ts
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify required files exist
+        run: |
+          test -f main.js || { echo "main.js not found"; exit 1; }
+          test -f manifest.json || { echo "manifest.json not found"; exit 1; }
+          test -f styles.css || { echo "styles.css not found"; exit 1; }
+          echo "All required files present for Obsidian plugin"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-build
+          path: |
+            main.js
+            manifest.json
+            styles.css
+          retention-days: 7
+
+  validate-manifest:
+    name: Validate Manifest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate manifest.json
+        run: |
+          echo "Validating manifest.json..."
+          test -f manifest.json || { echo "manifest.json not found"; exit 1; }
+
+          # Validate JSON syntax
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8'))" || { echo "Invalid JSON"; exit 1; }
+
+          # Check required fields
+          MANIFEST=$(cat manifest.json)
+          echo "$MANIFEST" | jq -e '.id' > /dev/null || { echo "Missing 'id' field"; exit 1; }
+          echo "$MANIFEST" | jq -e '.name' > /dev/null || { echo "Missing 'name' field"; exit 1; }
+          echo "$MANIFEST" | jq -e '.version' > /dev/null || { echo "Missing 'version' field"; exit 1; }
+          echo "$MANIFEST" | jq -e '.minAppVersion' > /dev/null || { echo "Missing 'minAppVersion' field"; exit 1; }
+          echo "$MANIFEST" | jq -e '.description' > /dev/null || { echo "Missing 'description' field"; exit 1; }
+          echo "$MANIFEST" | jq -e '.author' > /dev/null || { echo "Missing 'author' field"; exit 1; }
+          echo "$MANIFEST" | jq -e '.isDesktopOnly' > /dev/null || { echo "Missing 'isDesktopOnly' field"; exit 1; }
+
+          # Validate version format (no 'v' prefix)
+          VERSION=$(echo "$MANIFEST" | jq -r '.version')
+          if [[ "$VERSION" == v* ]]; then
+            echo "Version should not have 'v' prefix: $VERSION"
+            exit 1
+          fi
+
+          echo "manifest.json is valid!"
+          echo "  - ID: $(echo "$MANIFEST" | jq -r '.id')"
+          echo "  - Name: $(echo "$MANIFEST" | jq -r '.name')"
+          echo "  - Version: $VERSION"
+          echo "  - Min App Version: $(echo "$MANIFEST" | jq -r '.minAppVersion')"
