@@ -77,20 +77,24 @@ jobs:
             const fs = require('fs');
             const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
             manifest.version = '$NEW_VERSION';
-            fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, 4));
+            fs.writeFileSync('manifest.json', JSON.stringify(manifest, null, '\\t'));
           "
 
-          # Update versions.json
+          # Update versions.json (set npm_package_version for the script)
+          export npm_package_version="$NEW_VERSION"
           node version-bump.mjs
 
-          # Commit the changes
+          # Add changes (even if no changes, we'll handle it)
           git add manifest.json versions.json
-          git commit -m "chore: bump version to $NEW_VERSION"
 
-      - name: Move tag to updated commit
+          # Always create a commit (allow empty if manifest already at correct version)
+          # This ensures the tag points to a release-specific commit
+          git commit --allow-empty -m "chore: release v$NEW_VERSION"
+
+      - name: Move tag to release commit
         run: |
           TAG="${{ steps.tag.outputs.new_tag }}"
-          echo "Moving tag $TAG to the current HEAD (with updated manifest.json)"
+          echo "Moving tag $TAG to the release commit"
           git tag -f $TAG
           git push origin $TAG --force
 
