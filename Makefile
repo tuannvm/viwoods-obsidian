@@ -58,7 +58,11 @@ build-check:
 # ============================================================================
 
 lint:
+	@echo "Running ESLint..."
 	@npm run lint
+	@echo "Running TypeScript type check..."
+	@npx tsc --noEmit
+	@echo "✓ Lint passed!"
 
 format:
 	@npm run format

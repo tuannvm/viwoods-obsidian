@@ -6,5 +6,5 @@
     "description": "Import and sync Viwoods .note files with Obsidian. Converts handwritten notes to SVG, extracts audio recordings, and supports auto-sync for real-time updates.",
     "author": "tuannvm",
     "authorUrl": "https://github.com/tuannvm",
-    "isDesktopOnly": false
+    "isDesktopOnly": true
 }

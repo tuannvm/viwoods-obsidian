@@ -82,6 +82,9 @@ export class ImporterService {
 
                 for (let i = 0; i < mainBmpFiles.length; i++) {
                     const bmpResource = mainBmpFiles[i];
+                    if (!bmpResource.fileName) {
+                        continue;
+                    }
                     const imageFile = files.find(f => f === bmpResource.fileName);
                     if (imageFile) {
                         const imageFileObj = zip.file(imageFile);
@@ -94,8 +97,9 @@ export class ImporterService {
                             if (this.settings.outputFormat === 'svg' || this.settings.outputFormat === 'both' || this.settings.enableSvgViewer) {
                                 const pathFiles = pageResource.filter((r: PageResource) => r.resourceType === 7);
                                 const pathResource = pathFiles[i];
-                                if (pathResource && pathResource.fileName) {
-                                    const pathFile = files.find(f => f.includes(pathResource.fileName));
+                                const fileName = pathResource?.fileName;
+                                if (fileName) {
+                                    const pathFile = files.find(f => f.includes(fileName));
                                     if (pathFile) {
                                         const pathFileObj = zip.file(pathFile);
                                         if (pathFileObj) {
