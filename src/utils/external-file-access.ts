@@ -59,8 +59,8 @@ class DesktopFileAccess implements FileAccessImpl {
 
             // Verify the path exists and is a directory
             try {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
+                 
             const stats = this.fs!.statSync(normalizedPath);
                 log.debug('📊 Path stats:', { isDirectory: stats.isDirectory(), exists: true });
                 if (!stats.isDirectory()) {
@@ -91,7 +91,7 @@ class DesktopFileAccess implements FileAccessImpl {
         let normalized = inputPath.replace(/[/\\]+$/, '');
 
         // Use path.normalize to handle . and .., and convert separators
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         normalized = this.path!.normalize(normalized);
 
         log.debug('✨ Normalized result:', normalized);
@@ -106,7 +106,7 @@ class DesktopFileAccess implements FileAccessImpl {
 
         try {
             const normalized = this.normalizePath(testPath);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const stats = this.fs!.statSync(normalized);
             return {
                 accessible: true,
@@ -130,7 +130,7 @@ class DesktopFileAccess implements FileAccessImpl {
     ): Promise<void> {
         let entries: import('fs').Dirent[];
         try {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             entries = this.fs!.readdirSync(currentPath, { withFileTypes: true });
         } catch (readError) {
             log.warn(`Cannot read directory ${currentPath}, skipping:`, readError);
@@ -145,7 +145,7 @@ class DesktopFileAccess implements FileAccessImpl {
                 }
 
                 // Use path.join for proper path construction
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
                 const fullPath = this.path!.join(currentPath, entry.name);
 
                 if (entry.isDirectory()) {
@@ -158,10 +158,10 @@ class DesktopFileAccess implements FileAccessImpl {
                     }
 
                     try {
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                         
                         const stats = this.fs!.statSync(fullPath);
                         // Calculate relative path from root folder
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                         
                         const relativePath = this.path!.relative(rootPath, fullPath);
 
                         files.push({
@@ -186,7 +186,7 @@ class DesktopFileAccess implements FileAccessImpl {
 
         try {
             const normalizedPath = this.normalizePath(filePath);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const buffer = this.fs!.readFileSync(normalizedPath);
             return new Blob([buffer]);
         } catch (error) {
@@ -200,7 +200,7 @@ class DesktopFileAccess implements FileAccessImpl {
 
         try {
             const normalizedPath = this.normalizePath(folderPath);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const stats = this.fs!.statSync(normalizedPath);
             return stats.isDirectory();
         } catch {

@@ -50,9 +50,9 @@ export function getNodeModules(): { fs: typeof import('fs'); path: typeof import
     }
 
     try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+         
         const fs = require('fs');
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+         
         const path = require('path');
         return { fs, path };
     } catch (error) {

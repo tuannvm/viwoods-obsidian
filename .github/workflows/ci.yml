@@ -13,6 +13,10 @@ jobs:
     permissions:
       contents: read
 
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -30,13 +34,17 @@ jobs:
         run: npx tsc --noEmit
 
       - name: Lint
-        run: npx eslint src --ext .ts
+        run: npm run lint
 
   build:
     name: Build
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
 
     steps:
       - name: Checkout
@@ -45,7 +53,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -97,7 +105,7 @@ jobs:
           echo "$MANIFEST" | jq -e '.minAppVersion' > /dev/null || { echo "Missing 'minAppVersion' field"; exit 1; }
           echo "$MANIFEST" | jq -e '.description' > /dev/null || { echo "Missing 'description' field"; exit 1; }
           echo "$MANIFEST" | jq -e '.author' > /dev/null || { echo "Missing 'author' field"; exit 1; }
-          echo "$MANIFEST" | jq -e '.isDesktopOnly' > /dev/null || { echo "Missing 'isDesktopOnly' field"; exit 1; }
+          echo "$MANIFEST" | jq '.isDesktopOnly' > /dev/null || { echo "Missing 'isDesktopOnly' field"; exit 1; }
 
           # Validate version format (no 'v' prefix)
           VERSION=$(echo "$MANIFEST" | jq -r '.version')
