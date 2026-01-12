@@ -219,7 +219,7 @@ export class AutoSyncService {
                     lastModified: file.lastModified
                 });
                 log.debug(`New file detected: ${file.relativePath}`);
-            } else if (file.lastModified > (knownFile.lastImported || 0)) {
+            } else if (file.lastModified > Number(knownFile.lastImported || 0)) {
                 // Modified file
                 changes.push({
                     fileName: file.fileName,

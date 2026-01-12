@@ -193,15 +193,14 @@ export class OneToOneImporter {
 
                 // Convert blob to buffer
                 const buffer = await page.image.blob.arrayBuffer();
-                const uint8Array = new Uint8Array(buffer);
 
                 // Use app.vault.createBinary() instead of adapter.writeBinary()
                 // This triggers proper Obsidian events for Notepix to detect
                 const existingFile = this.app.vault.getAbstractFileByPath(filepath);
                 if (existingFile instanceof TFile) {
-                    await this.app.vault.modifyBinary(existingFile, uint8Array);
+                    await this.app.vault.modifyBinary(existingFile, buffer);
                 } else {
-                    await this.app.vault.createBinary(filepath, uint8Array);
+                    await this.app.vault.createBinary(filepath, buffer);
                 }
                 savedFiles.push({ filename, relativePath: this.calculateRelativePath(filename) });
             } catch (error) {
@@ -217,13 +216,12 @@ export class OneToOneImporter {
 
                 try {
                     const buffer = await page.audio.blob.arrayBuffer();
-                    const uint8Array = new Uint8Array(buffer);
 
                     const existingFile = this.app.vault.getAbstractFileByPath(filepath);
                     if (existingFile instanceof TFile) {
-                        await this.app.vault.modifyBinary(existingFile, uint8Array);
+                        await this.app.vault.modifyBinary(existingFile, buffer);
                     } else {
-                        await this.app.vault.createBinary(filepath, uint8Array);
+                        await this.app.vault.createBinary(filepath, buffer);
                     }
                     savedFiles.push({ filename, relativePath: this.calculateRelativePath(filename) });
                 } catch (error) {
