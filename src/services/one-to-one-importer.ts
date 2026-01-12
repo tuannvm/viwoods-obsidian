@@ -130,8 +130,8 @@ export class OneToOneImporter {
             // Find the attachment for this page
             const pageImage = attachments.find(a => a.filename.includes(`_page_${page.pageNum}.`));
             if (pageImage) {
-                // Use relative path for the image link
-                lines.push(`![Page ${page.pageNum}](${pageImage.relativePath})`);
+                // Use angle brackets for paths with spaces (Obsidian-compatible)
+                lines.push(`![Page ${page.pageNum}](<${pageImage.relativePath}>)`);
                 lines.push('');
             }
 
@@ -165,9 +165,20 @@ export class OneToOneImporter {
     ): Promise<Array<{ filename: string; relativePath: string }>> {
         const savedFiles: Array<{ filename: string; relativePath: string }> = [];
 
-        // Sanitize relative directory for filename (remove slashes, replace with underscore)
-        const dirPrefix = relativeDir.replace(/\/+/g, '_').replace(/^_+|_+$/g, '');
+        // Sanitize relative directory for filename:
+        // 1. Remove leading/trailing slashes first
+        // 2. Replace remaining slashes with underscores
+        // 3. Remove any resulting duplicate underscores
+        let dirPrefix = relativeDir.replace(/^\/+|\/+$/g, ''); // Remove leading/trailing slashes
+        dirPrefix = dirPrefix.replace(/\/+/g, '_'); // Replace internal slashes with single underscore
+        dirPrefix = dirPrefix.replace(/_+/g, '_'); // Collapse multiple underscores to single
+        dirPrefix = dirPrefix.replace(/^_+|_+$/g, ''); // Remove leading/trailing underscores again
+
+        // Build name prefix: viwoods_[optional_folder_structure]_[notebook_name]
+        // If no folder structure, just: viwoods_[notebook_name]
         const namePrefix = dirPrefix ? `viwoods_${dirPrefix}_${book.bookName}` : `viwoods_${book.bookName}`;
+
+        console.log('Attachment naming:', { relativeDir, dirPrefix, namePrefix });
 
         // Save images
         for (const page of book.pages) {
