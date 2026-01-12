@@ -361,7 +361,7 @@ export class AutoSyncService {
      */
     private getWatcherStatePath(): string {
         // Use plugin data directory
-        return `.obsidian/plugins/viwoods-notes-importer/${WATCHER_STATE_FILE}`;
+        return `.obsidian/plugins/viwoods-obsidian/${WATCHER_STATE_FILE}`;
     }
 
     // ========================================================================

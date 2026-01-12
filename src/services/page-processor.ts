@@ -168,7 +168,7 @@ export class PageProcessor {
             };
         } catch (error: unknown) {
             log.error(`Failed to import page ${pageNum}:`, error);
-            summary.errors.push({ page: pageNum, error: error.message });
+            summary.errors.push({ page: pageNum, error: error instanceof Error ? error.message : String(error) });
         }
     }
 

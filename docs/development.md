@@ -97,10 +97,10 @@ npx eslint ./src/
 
 ```bash
 # Copy to Obsidian plugin folder
-cp main.js manifest.json styles.css <vault>/.obsidian/plugins/viwoods-notes-importer/
+cp main.js manifest.json styles.css <vault>/.obsidian/plugins/viwoods-obsidian/
 
 # Or use symbolic link for development
-ln -s /path/to/repo/main.js <vault>/.obsidian/plugins/viwoods-notes-importer/main.js
+ln -s /path/to/repo/main.js <vault>/.obsidian/plugins/viwoods-obsidian/main.js
 ```
 
 Then reload Obsidian and enable the plugin in **Settings → Community plugins**.

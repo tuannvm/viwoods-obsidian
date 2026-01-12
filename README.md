@@ -1,4 +1,4 @@
-# Viwoods Notes Importer
+# Viwoods Sync
 
 [![CI Status](https://img.shields.io/github/actions/workflow/status/tuannvm/viwoods-obsidian/ci?branch=main&logo=github-actions&logoColor=white)](https://github.com/tuannvm/viwoods-obsidian/actions/workflows/ci.yml)
 [![Latest Release](https://img.shields.io/github/v/release/tuannvm/viwoods-obsidian?display_name=tag&logo=Dropbox&logoColor=white&color=blue)](https://github.com/tuannvm/viwoods-obsidian/releases/latest)
@@ -6,17 +6,18 @@
 [![Obsidian Compatible](https://img.shields.io/badge/Obsidian-Compatible-%23483699?logo=obsidian&logoColor=white)](https://obsidian.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white)](https://www.typescriptlang.org/)
 
-Import Viwoods `.note` files directly into Obsidian with support for handwritten notes, audio recordings, and stroke data conversion to SVG.
+An Obsidian plugin for bidirectional synchronization with Viwoods note-taking app. Import Viwoods `.note` files with full support for handwritten strokes (SVG), audio recordings, and automatic folder watching for real-time sync.
 
 ## Features
 
-- **Import Viwoods notes** - Reads proprietary Viwoods `.note` file format
-- **Handwritten notes** - Converts stroke data to SVG for viewing in Obsidian
-- **Audio recordings** - Extracts and saves audio recordings from notes
-- **Page thumbnails** - Generates page images for quick preview
-- **Change detection** - Uses image hashes to detect modified pages
-- **PDF export** - Export pages to PDF using jsPDF
-- **One-to-one sync** - Auto-import mode that preserves folder structure
+- **Bidirectional sync** - Watch Viwoods export folder for changes and auto-import to Obsidian
+- **Handwritten notes** - Converts Viwoods stroke data to clean SVG for viewing/editing in Obsidian
+- **Audio recordings** - Extracts and embeds audio recordings from notes
+- **Change detection** - Smart image hashing detects modified pages for selective updates
+- **One-to-one mapping** - Preserves Viwoods folder structure in your vault
+- **Drag & drop** - Import individual `.note` files by dropping them into Obsidian
+- **PDF export** - Generate PDFs from Viwoods pages with stroke overlay
+- **Mobile support** - File System Access API support for mobile devices
 
 ## Quick Start
 
@@ -27,7 +28,7 @@ Import Viwoods `.note` files directly into Obsidian with support for handwritten
 1. Download the latest release from [GitHub Releases](https://github.com/tuannvm/viwoods-obsidian/releases)
 2. Extract `main.js`, `manifest.json`, and `styles.css` to:
    ```
-   <Vault>/.obsidian/plugins/viwoods-notes-importer/
+   <Vault>/.obsidian/plugins/viwoods-obsidian/
    ```
 3. Enable the plugin in **Settings → Community plugins**
 
@@ -53,10 +54,23 @@ Open the command palette (Ctrl/Cmd+P) and run:
 
 ## Configuration
 
-Configure folders and import behavior in **Settings → Viwoods Notes Importer**:
-- Notes folder location
-- Images, audio, strokes, and PDF folders
-- Auto-sync settings and folder structure preferences
+Configure sync behavior in **Settings → Viwoods Sync**:
+
+### Basic Settings
+- **Notes folder** - Where imported markdown files are stored
+- **Include metadata** - Add YAML frontmatter with timestamps and book info
+- **Include timestamps** - Add creation/modification dates to notes
+
+### Output Format
+- **Format** - Choose between PNG images, SVG strokes, or both
+- **Background color** - Set background for generated images/SVG
+
+### Auto-Sync
+- **Enable auto-sync** - Watch Viwoods export folder for changes
+- **Source folder path** - Path to Viwoods notes export directory
+- **Polling interval** - How often to check for changes (1-60 minutes)
+- **Sync on startup** - Automatically check for changes when Obsidian opens
+- **Show notifications** - Display notices when changes are detected
 
 ## Documentation
 

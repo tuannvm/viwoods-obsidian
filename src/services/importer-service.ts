@@ -9,17 +9,7 @@ import type {
 } from '../types.js';
 import { hashImageData } from '../utils/file-utils.js';
 import { log } from '../utils/logger.js';
-
-// Minimal type for JSZip object (loaded externally)
-interface ZipFile {
-    async(type: 'blob'): Promise<Blob>;
-    async(type: 'string'): Promise<string | Blob | ArrayBuffer>;
-}
-
-interface ZipObject {
-    file(path: string): ZipFile | null;
-    files: Record<string, unknown>;
-}
+import type { JSZip } from '../utils/external-libs.js';
 
 interface PageResource {
     fileName?: string;
@@ -44,7 +34,7 @@ export class ImporterService {
     ) {}
 
     async convertNoteToBook(
-        zip: ZipObject,
+        zip: JSZip,
         files: string[],
         fileName: string,
         isNewFormat: boolean
@@ -63,7 +53,7 @@ export class ImporterService {
     }
 
     private async convertNewFormat(
-        zip: ZipObject,
+        zip: JSZip,
         files: string[],
         bookName: string,
         allAudioFiles: string[]
@@ -75,7 +65,7 @@ export class ImporterService {
         if (noteFileInfo) {
             const file = zip.file(noteFileInfo);
             if (file) {
-                const content = await file.async('string');
+                const content = await file.async('string') as string;
                 metadata = JSON.parse(content);
                 bookName = this.settings.filePrefix + (metadata.fileName || bookName);
                 log.debug(`Book name from metadata: ${bookName}`);
@@ -86,7 +76,7 @@ export class ImporterService {
         if (pageResourceFile) {
             const pageResourceFileObj = zip.file(pageResourceFile);
             if (pageResourceFileObj) {
-                const pageResource = JSON.parse(await pageResourceFileObj.async('string')) as PageResource[];
+                const pageResource = JSON.parse(await pageResourceFileObj.async('string') as string) as PageResource[];
                 const mainBmpFiles = pageResource.filter((r: PageResource) => r.fileName?.includes('mainBmp'));
                 log.debug(`Processing ${mainBmpFiles.length} pages`);
 
@@ -96,7 +86,7 @@ export class ImporterService {
                     if (imageFile) {
                         const imageFileObj = zip.file(imageFile);
                         if (imageFileObj) {
-                            const blob = await imageFileObj.async('blob');
+                            const blob = await imageFileObj.async('blob') as Blob;
                             const hash = await hashImageData(blob);
                             const pageData: PageData = { pageNum: i + 1, image: { blob, hash } };
 
@@ -109,7 +99,7 @@ export class ImporterService {
                                     if (pathFile) {
                                         const pathFileObj = zip.file(pathFile);
                                         if (pathFileObj) {
-                                            pageData.stroke = JSON.parse(await pathFileObj.async('string'));
+                                            pageData.stroke = JSON.parse(await pathFileObj.async('string') as string);
                                         }
                                     }
                                 }
@@ -121,7 +111,7 @@ export class ImporterService {
                             if (audioFile) {
                                 const audioFileObj = zip.file(audioFile);
                                 if (audioFileObj) {
-                                    const audioBlob = await audioFileObj.async('blob');
+                                    const audioBlob = await audioFileObj.async('blob') as Blob;
                                     const audioFileName = audioFile.split('/').pop() || audioFile.split('\\').pop();
                                     pageData.audio = {
                                         blob: audioBlob,
@@ -145,7 +135,7 @@ export class ImporterService {
             if (thumbnailFile) {
                 const thumbnailFileObj = zip.file(thumbnailFile);
                 if (thumbnailFileObj) {
-                    thumbnail = await thumbnailFileObj.async('blob');
+                    thumbnail = await thumbnailFileObj.async('blob') as Blob;
                     log.debug('Found thumbnail');
                 }
             }
@@ -156,7 +146,7 @@ export class ImporterService {
     }
 
     private async convertOldFormat(
-        zip: ZipObject,
+        zip: JSZip,
         files: string[],
         bookName: string,
         allAudioFiles: string[]
@@ -168,7 +158,7 @@ export class ImporterService {
         if (notesBeanFile) {
             const notesBeanFileObj = zip.file(notesBeanFile);
             if (notesBeanFileObj) {
-                const content = await notesBeanFileObj.async('string');
+                const content = await notesBeanFileObj.async('string') as string;
                 metadata = JSON.parse(content);
                 bookName = this.settings.filePrefix + (metadata.nickname || metadata.noteName || bookName);
                 log.debug(`Book name from old format metadata: ${bookName}`);
@@ -179,7 +169,7 @@ export class ImporterService {
         if (noteListFile) {
             const noteListFileObj = zip.file(noteListFile);
             if (noteListFileObj) {
-                const noteList = JSON.parse(await noteListFileObj.async('string'));
+                const noteList = JSON.parse(await noteListFileObj.async('string') as string);
                 log.debug(`Processing ${noteList.length} pages from old format`);
 
                 for (let i = 0; i < noteList.length; i++) {
@@ -188,7 +178,7 @@ export class ImporterService {
                     if (imageFile) {
                         const imageFileObj = zip.file(imageFile);
                         if (imageFileObj) {
-                            const blob = await imageFileObj.async('blob');
+                            const blob = await imageFileObj.async('blob') as Blob;
                             const hash = await hashImageData(blob);
                             const pageData: PageData = { pageNum: i + 1, image: { blob, hash } };
 
@@ -201,7 +191,7 @@ export class ImporterService {
                             if (audioFile) {
                                 const audioFileObj = zip.file(audioFile);
                                 if (audioFileObj) {
-                                    const audioBlob = await audioFileObj.async('blob');
+                                    const audioBlob = await audioFileObj.async('blob') as Blob;
                                     const audioFileName = audioFile.split('/').pop() || audioFile.split('\\').pop();
                                     pageData.audio = {
                                         blob: audioBlob,

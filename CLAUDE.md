@@ -37,7 +37,7 @@ Technical details are in the `docs/` directory:
 - Check for `window.JSZip` and `window.jspdf` before use
 
 ### Manifest Rules
-- `id`: `viwoods-notes-importer` (never change after release)
+- `id`: `viwoods-obsidian` (never change after release)
 - `isDesktopOnly`: `false` (supports mobile)
 - Version must match git tag when releasing (no `v` prefix)
 

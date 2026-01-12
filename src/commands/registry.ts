@@ -16,6 +16,10 @@ import type { PageProcessor } from '../services/page-processor.js';
 export interface IViwoodsPlugin {
     settings: ViwoodsSettings;
     processNoteFile(file: File): Promise<void>;
+    saveSettings(): Promise<void>;
+    startAutoSync(): Promise<void>;
+    stopAutoSync(): void;
+    restartAutoSync(): Promise<void>;
 }
 
 export interface CommandRegistryDependencies {
@@ -83,5 +87,6 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
     plugin.registerDomEvent(document, 'dragover', (evt: DragEvent) => dragDropHandler.handleDragOver(evt));
 
     // Add settings tab
-    plugin.addSettingTab(new ViwoodsSettingTab(app, pluginInstance));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ViwoodsSettingTab requires full plugin type
+    plugin.addSettingTab(new ViwoodsSettingTab(app, pluginInstance as any));
 }
