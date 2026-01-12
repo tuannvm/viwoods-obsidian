@@ -36,7 +36,7 @@ export async function analyzeChanges(
         return { changes, summary };
     }
 
-    const existingMap = new Map<number, { manifestInfo: any, fileHash?: string }>();
+    const existingMap = new Map<number, { manifestInfo: ImportManifest['importedPages'][number], fileHash?: string }>();
     Object.entries(existingManifest.importedPages).forEach(([pageNum, info]) => {
         existingMap.set(parseInt(pageNum), { manifestInfo: info });
     });
@@ -117,9 +117,9 @@ export async function createManifestBackup(app: App, manifestPath: string, creat
     return null;
 }
 
-export function addHistoryEntry(manifest: ImportManifest, action: string, pages: number[], summary: string, maxHistoryEntries: number) {
+export function addHistoryEntry(manifest: ImportManifest, action: 'import' | 'update' | 'delete', pages: number[], summary: string, maxHistoryEntries: number) {
     if (!manifest.history) manifest.history = [];
-    manifest.history.unshift({ date: new Date().toISOString(), action: action as any, pages, summary });
+    manifest.history.unshift({ date: new Date().toISOString(), action, pages, summary });
     if (manifest.history.length > maxHistoryEntries) {
         manifest.history = manifest.history.slice(0, maxHistoryEntries);
     }
@@ -234,9 +234,9 @@ export async function ensureFolder(app: App, path: string) {
         if (!folderExists) {
             try {
                 await app.vault.createFolder(normalizedPath);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 // If it's a "Folder already exists" error, that's fine - continue
-                if (error.message && error.message.toLowerCase().includes('already exists')) {
+                if (error instanceof Error && error.message && error.message.toLowerCase().includes('already exists')) {
                     continue;
                 }
 

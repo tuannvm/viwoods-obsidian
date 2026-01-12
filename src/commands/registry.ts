@@ -9,17 +9,25 @@ import { DragDropHandler } from '../handlers/drag-drop-handler.js';
 import { exportCurrentPageToPDF } from './export-pdf-command.js';
 import { resetBookHashes } from './reset-hashes-command.js';
 import { ViwoodsSettingTab } from '../settings.js';
+import type { ImporterService } from '../services/importer-service.js';
+import type { PageProcessor } from '../services/page-processor.js';
+
+// Minimal interface for plugin to avoid circular dependency
+export interface IViwoodsPlugin {
+    settings: ViwoodsSettings;
+    processNoteFile(file: File): Promise<void>;
+}
 
 export interface CommandRegistryDependencies {
     app: App;
     settings: ViwoodsSettings;
     penMappings: PenMappings;
-    importerService: any;
-    pageProcessor: any;
+    importerService: ImporterService;
+    pageProcessor: PageProcessor;
     viewerService: ViewerService;
     importWorkflow: ImportWorkflow;
     dragDropHandler: DragDropHandler;
-    plugin: any;
+    plugin: IViwoodsPlugin;
 }
 
 export function registerCommands(plugin: Plugin, deps: CommandRegistryDependencies): void {

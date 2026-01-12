@@ -3,15 +3,9 @@
 import { App, TFile, normalizePath, Notice } from 'obsidian';
 import { smoothPoints } from './svg-generator.js';
 
-declare global {
-    interface Window {
-        jspdf: any;
-    }
-}
-
 export async function generatePdfFromStrokes(
     app: App,
-    strokeData: any,
+    strokeData: number[][],
     outputPath: string,
     forceUpdate: boolean,
     defaultSmoothness: number
@@ -30,6 +24,7 @@ export async function generatePdfFromStrokes(
         return;
     }
 
+    // @ts-ignore - jsPDF is loaded externally
     const { jsPDF } = window.jspdf;
 
     // Create PDF document
@@ -155,11 +150,11 @@ export async function generatePdfFromStrokes(
 }
 
 export async function exportSvgToPdf(
-    strokeData: any,
+    strokeData: number[][],
     smoothness: number,
     backgroundColor: string,
     getPenStyleFn: (penId: number) => { color: string, width: number, opacity: number },
-    smoothStrokeDataFn: (strokeData: any, smoothness: number) => number[][][]
+    smoothStrokeDataFn: (strokeData: number[][], smoothness: number) => number[][][]
 ) {
     if (!window.jspdf) {
         new Notice('jsPDF library not loaded');

@@ -19,6 +19,8 @@ export class App {}
 
 export class Notice {
 	static notices: Notice[] = [];
+	message: string;
+	timeout?: number;
 	constructor(message: string, timeout?: number) {
 		Notice.notices.push(this);
 		this.message = message;

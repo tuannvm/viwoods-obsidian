@@ -1,11 +1,38 @@
 // external-libs.ts - External library loading utilities
 
+// JSZip type definition (loaded externally)
+interface JSZip {
+    loadAsync(data: Blob | string): Promise<JSZip>;
+    files: { [filename: string]: JSZipFile };
+    file(path: string): JSZipFile | null;
+}
+
+interface JSZipFile {
+    async(type: string): Promise<string | Blob | ArrayBuffer>;
+}
+
+// jsPDF type definition (loaded externally)
+interface jsPDF {
+    new(options?: { orientation?: string; unit?: string; format?: string }): jsPDFInstance;
+    output(type: string): Blob;
+    addImage(imgData: string, format: string, x: number, y: number, w: number, h: number): void;
+    save(filename: string): void;
+}
+
+interface jsPDFInstance {
+    output(type: string): Blob;
+    addImage(imgData: string, format: string, x: number, y: number, w: number, h: number): void;
+    save(filename: string): void;
+}
+
 declare global {
     interface Window {
-        JSZip: any;
-        jspdf: any;
+        JSZip?: { loadAsync(data: Blob | string): Promise<JSZip> };
+        jspdf?: { jsPDF: jsPDF };
     }
 }
+
+export type { JSZip, JSZipFile, jsPDF, jsPDFInstance };
 
 export async function loadJSZip(): Promise<void> {
     const script = document.createElement('script');

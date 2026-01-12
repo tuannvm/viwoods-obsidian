@@ -52,7 +52,7 @@ export class OneToOneImporter {
 
             // Get Obsidian's configured attachment folder path
             // The attachment folder is relative to vault root
-            const attachmentConfig = (this.app.vault as any).config?.attachmentFolderPath;
+            const attachmentConfig = (this.app.vault as { config?: { attachmentFolderPath?: string } }).config?.attachmentFolderPath;
             const attachmentFolder = attachmentConfig || this.settings.notesFolder;
 
             // Save all attachments and get their filenames with relative paths
@@ -75,14 +75,14 @@ export class OneToOneImporter {
                 pagesImported: book.pages.length,
                 attachments: attachments.map(a => a.filename)
             };
-        } catch (error: any) {
+        } catch (error: unknown) {
             log.error('Error importing note:', error);
             return {
                 success: false,
                 filename: book.bookName + '.md',
                 pagesImported: 0,
                 attachments: [],
-                error: error.message
+                error: error instanceof Error ? error.message : String(error)
             };
         }
     }

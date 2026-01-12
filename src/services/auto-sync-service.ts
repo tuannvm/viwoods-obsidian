@@ -17,6 +17,11 @@ export interface IImportWorkflow {
     getImportInProgress(): boolean;
 }
 
+// Interface for plugin to avoid circular dependency
+export interface IAutoSyncPlugin {
+    updateSyncStatusBar?(): void;
+}
+
 /**
  * Auto-Sync Service - Manages polling, file scanning, and change detection
  */
@@ -24,7 +29,7 @@ export class AutoSyncService {
     private app: App;
     private settings: ViwoodsSettings;
     private importWorkflow: IImportWorkflow;
-    private pluginInstance: any; // ViwoodsImporterPlugin
+    private pluginInstance: IAutoSyncPlugin;
 
     // State
     private state: WatcherStateData;
@@ -39,7 +44,7 @@ export class AutoSyncService {
         app: App,
         settings: ViwoodsSettings,
         importWorkflow: IImportWorkflow,
-        pluginInstance: any
+        pluginInstance: IAutoSyncPlugin
     ) {
         this.app = app;
         this.settings = settings;
