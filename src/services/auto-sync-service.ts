@@ -30,7 +30,7 @@ export class AutoSyncService {
     private state: WatcherStateData;
     private detectedChanges: DetectedChange[] = [];
     private pollingIntervalId: number | null = null;
-    private isEnabled: boolean = false;
+    private isEnabled = false;
 
     // File access
     private fileAccess: ExternalFileAccess;

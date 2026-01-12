@@ -2,6 +2,7 @@
 
 import { Notice } from 'obsidian';
 import { isDesktop, isMobile, hasNodeJs, getNodeModules } from './platform.js';
+import { log } from './logger.js';
 
 /**
  * File information from external source
@@ -85,7 +86,7 @@ class DesktopFileAccess implements FileAccessImpl {
         log.debug('🔧 Normalizing path:', inputPath);
 
         // Remove trailing slashes
-        let normalized = inputPath.replace(/[\/\\]+$/, '');
+        let normalized = inputPath.replace(/[/\\]+$/, '');
 
         // Use path.normalize to handle . and .., and convert separators
         normalized = this.path!.normalize(normalized);
@@ -203,7 +204,6 @@ class DesktopFileAccess implements FileAccessImpl {
  */
 class MobileFileAccess implements FileAccessImpl {
     private directoryHandle: FileSystemDirectoryHandle | null = null;
-    private folderPath: string = '';
 
     async requestDirectoryAccess(): Promise<boolean> {
         if (!('showDirectoryPicker' in window)) {

@@ -3,6 +3,7 @@
 import { App, TFile } from 'obsidian';
 import type { ViwoodsSettings, BookResult } from '../types.js';
 import { ensureFolder } from '../utils/file-utils.js';
+import { log } from '../utils/logger.js';
 
 /**
  * Result of a one-to-one import operation

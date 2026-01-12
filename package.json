@@ -7,10 +7,14 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "node esbuild.config.mjs production",
 		"build:check": "tsc -noEmit && node esbuild.config.mjs production",
+		"lint": "npx eslint src --ext .ts",
+		"format": "npx eslint src --ext .ts --fix",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"test": "vitest run",
 		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage"
+		"test:coverage": "vitest run --coverage",
+		"test:watch": "vitest",
+		"clean": "rm -f main.js manifest.json"
 	},
 	"keywords": ["obsidian", "obsidian-plugin", "viwoods", "notes", "import"],
 	"author": "tuannvm",

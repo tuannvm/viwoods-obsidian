@@ -1,6 +1,6 @@
 // viewer-service.ts - SVG viewer rendering service
 
-import { App, TFile, MarkdownPostProcessorContext, normalizePath, Notice } from 'obsidian';
+import { App, TFile, normalizePath, Notice } from 'obsidian';
 import type { ViwoodsSettings } from '../types.js';
 import { log } from '../utils/logger.js';
 

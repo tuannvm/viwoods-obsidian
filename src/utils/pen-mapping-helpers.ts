@@ -2,7 +2,7 @@
 
 import { App } from 'obsidian';
 import type { PenMappings } from '../types.js';
-import { loadPenMappings, getKnownPenMappings } from './pen-mappings.js';
+import { loadPenMappings } from './pen-mappings.js';
 
 export async function initPenMappings(app: App): Promise<PenMappings> {
     return await loadPenMappings(app);

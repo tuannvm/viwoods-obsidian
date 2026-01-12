@@ -86,6 +86,28 @@ export interface ViwoodsSettings {
 
     // Debug settings (1)
     debugMode: boolean;
+
+    // Folder paths (4)
+    imagesFolder: string;
+    audioFolder: string;
+    strokesFolder: string;
+    pdfFolder: string;
+
+    // Import options (3)
+    dateFormat: string;
+    filePrefix: string;
+    includeThumbnails: boolean;
+    batchSize: number;
+
+    // SVG viewer settings (5)
+    showSvgViewer: boolean;
+    enableSvgViewer: boolean;
+    defaultSmoothness: number;
+    defaultReplaySpeed: number;
+    maxHistoryEntries: number;
+
+    // PDF export (1)
+    enablePdfExport: boolean;
 }
 
 export interface PenMapping {

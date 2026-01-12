@@ -1,6 +1,6 @@
 // page-processor.ts - Page import processing business logic
 
-import { App, Notice, TFile, normalizePath } from 'obsidian';
+import { App, TFile, normalizePath } from 'obsidian';
 import type {
     BookResult,
     ImportManifest,
@@ -10,6 +10,7 @@ import type {
 import { formatDate, ensureFolder } from '../utils/file-utils.js';
 import { processImageWithBackground } from '../utils/image-utils.js';
 import { strokesToSVG } from '../utils/svg-generator.js';
+import { log } from '../utils/logger.js';
 
 export class PageProcessor {
     private progressModal: any;
@@ -102,7 +103,7 @@ export class PageProcessor {
         if (!page) return;
 
         try {
-            const i = summary.newPages.length + summary.modifiedPages.length + summary.unchangedPages.length;
+            summary.newPages.length + summary.modifiedPages.length + summary.unchangedPages.length;
             const isNew = !existingManifest?.importedPages[pageNum];
             const isModified = existingManifest?.importedPages[pageNum]?.imageHash !== page.image.hash;
 
@@ -129,9 +130,8 @@ export class PageProcessor {
             }
 
             // Save image
-            let imageFile: TFile | undefined;
             if (this.settings.outputFormat === 'png' || this.settings.outputFormat === 'both') {
-                imageFile = await this.savePageImage(page, bookResult.bookName, pageNum, imagesFolder, isNew, isModified, existingManifest);
+                await this.savePageImage(page, bookResult.bookName, pageNum, imagesFolder, isNew, isModified, existingManifest);
             }
 
             // Save SVG if enabled

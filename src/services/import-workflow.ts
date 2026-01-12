@@ -6,7 +6,7 @@ import { ImporterService } from './importer-service.js';
 import { PageProcessor } from './page-processor.js';
 import { OneToOneImporter } from './one-to-one-importer.js';
 import { ImportSummaryModal, EnhancedImportModal } from '../ui/modals.js';
-import { loadManifest, saveManifest, addHistoryEntry, recoverManifestFromExistingFiles, createManifestBackup, ensureFolder, analyzeChanges } from '../utils/file-utils.js';
+import { loadManifest, saveManifest, addHistoryEntry, recoverManifestFromExistingFiles, ensureFolder, analyzeChanges } from '../utils/file-utils.js';
 import { hasJSZip } from '../utils/external-libs.js';
 import { ExternalFileAccess } from '../utils/external-file-access.js';
 import { log } from '../utils/logger.js';
@@ -16,7 +16,7 @@ export class ImportWorkflow {
     private settings: ViwoodsSettings;
     private importerService: ImporterService;
     private pageProcessor: PageProcessor;
-    private importInProgress: boolean = false;
+    private importInProgress = false;
 
     constructor(
         app: App,
@@ -70,7 +70,6 @@ export class ImportWorkflow {
                 }
             }
 
-            let backupPath: string | null = null;
             // Note: Backups removed in simplified version
 
             let analysis: { changes: PageChange[], summary: ImportSummary } | null = null;
@@ -98,7 +97,7 @@ export class ImportWorkflow {
                 }
             );
 
-            new ImportSummaryModal(this.app, summary, backupPath).open();
+            new ImportSummaryModal(this.app, summary, null).open();
         } catch (error: any) {
             log.error('Error processing note file:', error);
             new Notice(`Failed to import: ${file.name}\n${error.message}`);

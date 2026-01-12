@@ -52,7 +52,7 @@ declare global {
 
 export default class ViwoodsImporterPlugin extends Plugin {
     settings: ViwoodsSettings;
-    importInProgress: boolean = false;
+    importInProgress = false;
     penMappings: PenMappings = {};
 
     // Services
@@ -337,7 +337,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
  * Simple confirmation modal for destructive actions
  */
 class ConfirmationModal extends Modal {
-    private confirmed: boolean = false;
+    private confirmed = false;
     private onConfirm: (confirmed: boolean) => void;
 
     constructor(

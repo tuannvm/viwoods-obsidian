@@ -1,17 +1,14 @@
 // importer-service.ts - Core import business logic for Viwoods Notes Importer Plugin
 
-import { App, Notice, TFile, normalizePath } from 'obsidian';
+import { App } from 'obsidian';
 import type {
     PageData,
     BookResult,
-    ImportManifest,
-    ImportSummary,
     ViwoodsSettings,
     PenMappings
 } from '../types.js';
 import { hashImageData } from '../utils/file-utils.js';
-import { processImageWithBackground } from '../utils/image-utils.js';
-import { ensureFolder } from '../utils/file-utils.js';
+import { log } from '../utils/logger.js';
 
 export class ImporterService {
     constructor(
@@ -26,9 +23,7 @@ export class ImporterService {
         fileName: string,
         isNewFormat: boolean
     ): Promise<BookResult> {
-        let bookName = fileName.replace('.note', '').replace('.zip', '');
-        let metadata: any = {};
-        const pages: PageData[] = [];
+        const bookName = fileName.replace('.note', '').replace('.zip', '');
         log.debug(`Converting note to book: ${fileName}, format: ${isNewFormat ? 'new' : 'old'}`);
         log.debug(`Total files in archive: ${files.length}`);
         const allAudioFiles = files.filter(f => f.includes('audio') || f.endsWith('.m4a') || f.endsWith('.mp3'));
@@ -177,7 +172,7 @@ export class ImporterService {
             `Page${String(pageNum).padStart(3, '0')}`,
             `audio/${pageNum}`,
             (f: string) => {
-                const audioMatch = f.match(/audio[\/\\].*?(\d+)/i);
+                const audioMatch = f.match(/audio[/\\].*?(\d+)/i);
                 return audioMatch && parseInt(audioMatch[1]) === pageNum;
             }
         ];

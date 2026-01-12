@@ -242,11 +242,12 @@ export class EnhancedImportModal extends Modal {
                 case 'modified': pagesToImport = this.analysis?.summary.modifiedPages || []; break;
                 case 'new-and-modified': pagesToImport = [...(this.analysis?.summary.newPages || []), ...(this.analysis?.summary.modifiedPages || [])]; break;
                 case 'all': pagesToImport = this.bookResult.pages.map(p => p.pageNum); break;
-                case 'range':
+                case 'range': {
                     const from = parseInt(rangeFrom.value);
                     const to = parseInt(rangeTo.value);
                     for (let i = from; i <= to && i <= this.bookResult.pages.length; i++) pagesToImport.push(i);
                     break;
+                }
                 case 'select':
                     this.checkboxes.forEach((checkbox, pageNum) => { if (checkbox.checked) pagesToImport.push(pageNum); });
                     break;

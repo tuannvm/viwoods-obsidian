@@ -1,7 +1,8 @@
 // file-utils.ts - File utility functions for Viwoods Notes Importer Plugin
 
-import { App, TFile, normalizePath } from 'obsidian';
+import { App, TFile, TFolder, normalizePath } from 'obsidian';
 import { ImportManifest, PageChange, ImportSummary, ViwoodsSettings, BookResult } from '../types.js';
+import { log } from './logger.js';
 
 export async function hashImageData(blob: Blob): Promise<string> {
     try {
@@ -138,7 +139,7 @@ export async function recoverManifestFromExistingFiles(
     const manifest: ImportManifest = { bookName: bookName, totalPages: 0, importedPages: {}, lastImport: new Date().toISOString(), sourceFile: bookName, version: '1.1', history: [] };
     const pageRegex = /^Page (\d{3})\.md$/;
     let maxPage = 0;
-    for (const child of folder.children) {
+    for (const child of folder.children || []) {
         if (child instanceof TFile) {
             const match = child.name.match(pageRegex);
             if (match) {

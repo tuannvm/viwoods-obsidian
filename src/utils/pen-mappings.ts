@@ -2,6 +2,7 @@
 
 import { App, TFile } from 'obsidian';
 import type { PenMappings } from '../types.js';
+import { log } from './logger.js';
 
 export async function loadPenMappings(app: App): Promise<PenMappings> {
     try {

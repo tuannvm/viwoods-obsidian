@@ -20,7 +20,29 @@ export const DEFAULT_SETTINGS: ViwoodsSettings = {
     syncOnStartup: false,
 
     // Debug settings
-    debugMode: false
+    debugMode: false,
+
+    // Folder paths
+    imagesFolder: 'Attachments',
+    audioFolder: 'Attachments',
+    strokesFolder: 'Attachments',
+    pdfFolder: 'PDFs',
+
+    // Import options
+    dateFormat: 'YYYY-MM-DD HH:mm:ss',
+    filePrefix: '',
+    includeThumbnails: false,
+    batchSize: 10,
+
+    // SVG viewer settings
+    showSvgViewer: true,
+    enableSvgViewer: false,
+    defaultSmoothness: 0.5,
+    defaultReplaySpeed: 1.0,
+    maxHistoryEntries: 10,
+
+    // PDF export
+    enablePdfExport: false
 };
 
 export const PEN_MAPPING_PATH = 'Attachments/pen_mapping.json';
