@@ -1,6 +1,6 @@
 {
 	"name": "viwoods-obsidian",
-	"version": "0.0.110",
+	"version": "0.1.0",
 	"description": "An Obsidian plugin for bidirectional synchronization with Viwoods note-taking app",
 	"main": "main.js",
 	"scripts": {

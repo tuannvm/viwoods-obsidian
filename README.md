@@ -6,18 +6,17 @@
 [![Obsidian Compatible](https://img.shields.io/badge/Obsidian-Compatible-%23483699?logo=obsidian&logoColor=white)](https://obsidian.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=white)](https://www.typescriptlang.org/)
 
-An Obsidian plugin for bidirectional synchronization with Viwoods note-taking app. Import Viwoods `.note` files with full support for handwritten strokes (SVG), audio recordings, and automatic folder watching for real-time sync.
+An Obsidian plugin for importing and syncing Viwoods `.note` files with full support for handwritten strokes (SVG), audio recordings, and automatic folder watching for real-time sync.
 
 ## Features
 
-- **Bidirectional sync** - Watch Viwoods export folder for changes and auto-import to Obsidian
-- **Handwritten notes** - Converts Viwoods stroke data to clean SVG for viewing/editing in Obsidian
+- **Auto-sync** - Watch Viwoods export folder for changes and auto-import to Obsidian (desktop only)
+- **Handwritten notes** - Converts Viwoods stroke data to clean SVG for viewing/editing
 - **Audio recordings** - Extracts and embeds audio recordings from notes
 - **Change detection** - Smart image hashing detects modified pages for selective updates
 - **One-to-one mapping** - Preserves Viwoods folder structure in your vault
 - **Drag & drop** - Import individual `.note` files by dropping them into Obsidian
-- **PDF export** - Generate PDFs from Viwoods pages with stroke overlay
-- **Mobile support** - File System Access API support for mobile devices
+- **Cross-platform viewing** - Imported notes (Markdown, SVG, PNG, MP3) work on all platforms including mobile
 
 ## Quick Start
 
@@ -48,8 +47,6 @@ To check for updates: run **"BRAT: Check for updates to all beta plugins"** in t
 
 Open the command palette (Ctrl/Cmd+P) and run:
 - `Import Viwoods note` - Import a single `.note` file
-- `Export Viwoods book` - Export entire book data
-- `Export page to PDF` - Generate PDF for a page
 - `Reset book hashes` - Reset import tracking
 
 ## Configuration
@@ -65,12 +62,14 @@ Configure sync behavior in **Settings → Viwoods Sync**:
 - **Format** - Choose between PNG images, SVG strokes, or both
 - **Background color** - Set background for generated images/SVG
 
-### Auto-Sync
+### Auto-Sync (Desktop Only)
 - **Enable auto-sync** - Watch Viwoods export folder for changes
 - **Source folder path** - Path to Viwoods notes export directory
 - **Polling interval** - How often to check for changes (1-60 minutes)
 - **Sync on startup** - Automatically check for changes when Obsidian opens
 - **Show notifications** - Display notices when changes are detected
+
+> **Note:** Auto-sync requires desktop Obsidian. Imported notes can be viewed on any platform (desktop/mobile).
 
 ## Documentation
 
