@@ -1,6 +1,8 @@
 import tseslint from 'typescript-eslint';
 import obsidianmd from "eslint-plugin-obsidianmd";
 import globals from "globals";
+// @ts-expect-error - @microsoft/eslint-plugin-sdl doesn't provide TypeScript types
+import sdl from "@microsoft/eslint-plugin-sdl";
 
 export default tseslint.config(
 	{
@@ -32,6 +34,7 @@ export default tseslint.config(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	...sdl.configs.recommended,
 	{
 		rules: {
 			// TypeScript - Disable strict type checking rules (be pragmatic)
@@ -52,8 +55,8 @@ export default tseslint.config(
 			"obsidianmd/platform": "off",
 			"obsidianmd/prefer-file-manager-trash-file": "off",
 
-			// Security - Disable strict rules
-			"@microsoft/sdl/no-inner-html": "off",
+			// Security rules from @microsoft/eslint-plugin-sdl are enabled via obsidianmd.configs.recommended
+			// Safe innerHTML uses are documented with eslint-disable-next-line comments
 
 			// Dependencies
 			"depend/ban-dependencies": "off",

@@ -134,7 +134,7 @@ export interface WatchedFileState {
     lastModified: number;
     fileSize: number;
     hash?: string;
-    lastImported?: string;
+    lastImported?: number;  // Numeric timestamp for consistent comparison with file.lastModified
     bookName: string;
 }
 

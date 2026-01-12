@@ -219,7 +219,7 @@ export class AutoSyncService {
                     lastModified: file.lastModified
                 });
                 log.debug(`New file detected: ${file.relativePath}`);
-            } else if (file.lastModified > Number(knownFile.lastImported || 0)) {
+            } else if (file.lastModified > (knownFile.lastImported ?? 0)) {
                 // Modified file
                 changes.push({
                     fileName: file.fileName,
@@ -291,7 +291,7 @@ export class AutoSyncService {
                     // Mark as imported
                     const knownFile = this.state.knownFiles[change.fileName];
                     if (knownFile) {
-                        knownFile.lastImported = new Date().toISOString();
+                        knownFile.lastImported = Date.now();
                     }
                     successCount++;
                     log.debug(`Imported ${result.filename} (${result.pagesImported} pages)`);

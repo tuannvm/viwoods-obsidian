@@ -57,6 +57,7 @@ export class EnhancedImportModal extends Modal {
         if (this.analysis) {
             const analysisDiv = contentEl.createDiv({ cls: 'import-analysis' });
             analysisDiv.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 15px;';
+            // eslint-disable-next-line @microsoft/sdl/no-inner-html -- Safe: only contains static HTML with numeric counts, no user input
             analysisDiv.innerHTML = `
                 <h3>📊 Change Analysis</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
@@ -76,12 +77,12 @@ export class EnhancedImportModal extends Modal {
             const stats = contentEl.createDiv({ cls: 'import-stats' });
             stats.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 15px;';
             const existingPages = this.existingManifest ? Object.keys(this.existingManifest.importedPages).length : 0;
-            stats.innerHTML = `
-                <h3>📚 ${this.bookResult.bookName}</h3>
-                <p>📄 Total pages in file: ${this.bookResult.pages.length}</p>
-                <p>✅ Already imported: ${existingPages}</p>
-                <p>🎙️ Pages with audio: ${this.bookResult.pages.filter(p => p.audio).length}</p>
-            `;
+
+            // Use safe DOM APIs - bookName is user input
+            stats.createEl('h3', { text: `📚 ${this.bookResult.bookName}` });
+            stats.createEl('p', { text: `📄 Total pages in file: ${this.bookResult.pages.length}` });
+            stats.createEl('p', { text: `✅ Already imported: ${existingPages}` });
+            stats.createEl('p', { text: `🎙️ Pages with audio: ${this.bookResult.pages.filter(p => p.audio).length}` });
         }
 
         const modeContainer = contentEl.createDiv();
@@ -331,6 +332,7 @@ export class ImportSummaryModal extends Modal {
         if (this.summary.unchangedPages.length > 0) summaryHTML += `<div>✓ Unchanged pages: <strong>${this.summary.unchangedPages.length}</strong></div>`;
         if (this.summary.errors.length > 0) summaryHTML += `<div style="color: var(--text-error);">❌ Errors: <strong>${this.summary.errors.length}</strong></div>`;
         summaryHTML += '</div>';
+        // eslint-disable-next-line @microsoft/sdl/no-inner-html -- Safe: only contains static HTML with numeric counts, no user input
         summaryDiv.innerHTML = summaryHTML;
 
         if (this.summary.errors.length > 0) {
