@@ -18,6 +18,14 @@ An Obsidian plugin for importing and syncing Viwoods `.note` files with full sup
 - **Drag & drop** - Import individual `.note` files by dropping them into Obsidian
 - **Cross-platform viewing** - Imported notes (Markdown, SVG, PNG, MP3) work on all platforms including mobile
 
+### Screenshots
+
+**Plugin Settings**
+<img src="img/screenshot1.jpg" alt="Plugin Settings" width="600"/>
+
+**Imported Note (with handwriting and audio)**
+<img src="img/screenshot2.jpg" alt="Imported Note Example" width="600"/>
+
 ## Quick Start
 
 ### Installation

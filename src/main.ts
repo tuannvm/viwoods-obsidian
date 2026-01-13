@@ -219,11 +219,14 @@ export default class ViwoodsImporterPlugin extends Plugin {
                 return false;
             }
         });
+        /*
+        // Disabled - Source folder should be set in plugin settings
         this.addCommand({
             id: 'viwoods-set-source-folder',
             name: 'Set Viwoods source folder',
             callback: () => new Notice('Please set the source folder in plugin settings')
         });
+        */
         this.addCommand({
             id: 'viwoods-toggle-auto-sync',
             name: 'Enable/disable auto-sync',

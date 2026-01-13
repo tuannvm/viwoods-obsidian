@@ -38,6 +38,8 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
     const { app, settings, penMappings, viewerService, importWorkflow, dragDropHandler, plugin: pluginInstance } = deps;
 
     // Register commands
+    /*
+    // Disabled - Import handled via auto-sync and drag-drop
     plugin.addCommand({
         id: 'import-viwoods-note',
         name: 'Import Viwoods .note file',
@@ -49,7 +51,10 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
             new ImportModal(app, pluginInstance).open();
         }
     });
+    */
 
+    /*
+    // Disabled - Export feature removed from UI
     plugin.addCommand({
         id: 'export-viwoods-book',
         name: 'Export Viwoods book',
@@ -57,6 +62,7 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
             new ExportModal(app, pluginInstance).open();
         }
     });
+    */
 
     plugin.addCommand({
         id: 'export-page-to-pdf',
@@ -69,6 +75,8 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
         }
     });
 
+    /*
+    // Disabled - Reset hashes removed from UI
     plugin.addCommand({
         id: 'reset-book-hashes',
         name: 'Reset book hashes (fix change detection)',
@@ -76,6 +84,7 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
             await resetBookHashes(app, settings);
         }
     });
+    */
 
     // Register markdown code block processor
     plugin.registerMarkdownCodeBlockProcessor('viwoods-svg', async (source, el, _ctx) => {
