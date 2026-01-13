@@ -30,6 +30,11 @@ An Obsidian plugin that syncs Viwoods `.note` files into your vault. Converts ha
   <img src="img/screenshot2.jpg" alt="Imported Note Example" width="600"/>
 </p>
 
+<p align="center">
+  <b>Command Palette</b><br>
+  <img src="https://github.com/user-attachments/assets/e5be6dc1-6bc9-481d-bda1-bdca289b8f00" alt="Command Palette" width="600"/>
+</p>
+
 ## Quick Start
 
 ### Installation
