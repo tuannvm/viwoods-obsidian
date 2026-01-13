@@ -20,11 +20,15 @@ An Obsidian plugin for importing and syncing Viwoods `.note` files with full sup
 
 ### Screenshots
 
-**Plugin Settings**
-<img src="img/screenshot1.jpg" alt="Plugin Settings" width="600"/>
+<p align="center">
+  <b>Plugin Settings</b><br>
+  <img src="img/screenshot1.jpg" alt="Plugin Settings" width="600"/>
+</p>
 
-**Imported Note (with handwriting and audio)**
-<img src="img/screenshot2.jpg" alt="Imported Note Example" width="600"/>
+<p align="center">
+  <b>Imported Note (with handwriting and audio)</b><br>
+  <img src="img/screenshot2.jpg" alt="Imported Note Example" width="600"/>
+</p>
 
 ## Quick Start
 
