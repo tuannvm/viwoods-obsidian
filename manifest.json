@@ -1,10 +1,10 @@
 {
-	"id": "viwoods-obsidian",
+	"id": "viwoods-sync",
 	"name": "Viwoods Sync",
 	"minAppVersion": "0.15.0",
-	"description": "Import and sync Viwoods .note files with Obsidian. Converts handwritten notes to SVG, extracts audio recordings, and supports auto-sync for real-time updates.",
+	"description": "Import and sync Viwoods .note files. Converts handwritten notes to SVG, extracts audio recordings, and supports auto-sync for real-time updates.",
 	"author": "tuannvm",
 	"authorUrl": "https://github.com/tuannvm",
 	"isDesktopOnly": true,
-	"version": "0.1.5"
+	"version": "0.1.6"
 }
