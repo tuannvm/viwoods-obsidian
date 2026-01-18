@@ -147,6 +147,12 @@ SVG viewer management:
 - Handles stroke-to-SVG conversion display
 - Manages viewer settings (smoothness, replay)
 
+### OCRService (`services/ocr-service.ts`)
+macOS-only OCR pipeline:
+- Writes the embedded Swift script to a temp file
+- Preprocesses images in Swift for better handwriting recognition
+- Runs Apple Vision OCR via `swift` and returns JSON results
+
 ## Utilities
 
 ### SVG Generator (`utils/svg-generator.ts`)

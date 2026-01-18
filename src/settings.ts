@@ -182,7 +182,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Enable OCR')
-            .setDesc('Extract text from handwritten notes using Apple Vision Framework (macOS only)')
+            .setDesc('Extract text from handwritten notes using Apple Vision Framework (macOS desktop; requires Swift/Xcode Command Line Tools)')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.enableOcr)
                 .onChange(async (value) => {
