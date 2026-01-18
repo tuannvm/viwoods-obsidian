@@ -173,5 +173,50 @@ export class ViwoodsSettingTab extends PluginSettingTab {
                         new Notice('Debug mode enabled. Check console for detailed logs.');
                     }
                 }));
+
+        // ========================================================================
+        // OCR Settings (macOS only)
+        // ========================================================================
+
+        containerEl.createEl('h3', { text: 'OCR Settings' });
+
+        new Setting(containerEl)
+            .setName('Enable OCR')
+            .setDesc('Extract text from handwritten notes using Apple Vision Framework (macOS only)')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.enableOcr)
+                .onChange(async (value) => {
+                    this.plugin.settings.enableOcr = value;
+                    await this.plugin.saveSettings();
+                }));
+
+        new Setting(containerEl)
+            .setName('OCR Languages')
+            .setDesc('Comma-separated language codes for OCR (e.g., en-US, zh-Hans)')
+            .addText(text => text
+                .setPlaceholder('en-US')
+                .setValue(this.plugin.settings.ocrLanguages.join(','))
+                .onChange(async (value) => {
+                    this.plugin.settings.ocrLanguages = value
+                        .split(',')
+                        .map(lang => lang.trim())
+                        .filter(lang => lang.length > 0);
+                    if (this.plugin.settings.ocrLanguages.length === 0) {
+                        this.plugin.settings.ocrLanguages = ['en-US'];
+                    }
+                    await this.plugin.saveSettings();
+                }));
+
+        new Setting(containerEl)
+            .setName('OCR Confidence Threshold')
+            .setDesc('Minimum confidence level for OCR results (0.0 to 1.0)')
+            .addSlider(slider => slider
+                .setLimits(0, 1, 0.05)
+                .setValue(this.plugin.settings.ocrConfidenceThreshold)
+                .setDynamicTooltip()
+                .onChange(async (value) => {
+                    this.plugin.settings.ocrConfidenceThreshold = value;
+                    await this.plugin.saveSettings();
+                }));
     }
 }

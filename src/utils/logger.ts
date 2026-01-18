@@ -37,6 +37,16 @@ export const log = {
 	},
 
 	/**
+	 * Log info messages (only when debug mode is enabled)
+	 * @param args - Arguments to log
+	 */
+	info: (...args: unknown[]): void => {
+		if (DEBUG_MODE) {
+			console.info('[Viwoods]', ...args);
+		}
+	},
+
+	/**
 	 * Log error messages (always logged, regardless of debug mode)
 	 * @param args - Arguments to log
 	 */

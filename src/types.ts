@@ -10,6 +10,8 @@ export interface ImportManifest {
             imageHash: string;
             displayImageHash?: string;
             geminiProcessed: boolean;
+            ocrProcessed?: boolean;
+            ocrText?: string;
             hasAudio?: boolean;
             lastModified?: string;
             size?: number;
@@ -111,6 +113,11 @@ export interface ViwoodsSettings {
 
     // PDF export (1)
     enablePdfExport: boolean;
+
+    // OCR settings (3)
+    enableOcr: boolean;
+    ocrLanguages: string[];
+    ocrConfidenceThreshold: number;
 }
 
 export interface PenMapping {
