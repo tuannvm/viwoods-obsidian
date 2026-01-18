@@ -1,17 +1,11 @@
 // commands/registry.ts - Centralized command registration for Viwoods Obsidian
 
-import { Plugin, Notice, MarkdownView, App } from 'obsidian';
+import { Plugin, MarkdownView, App } from 'obsidian';
 import type { ViwoodsSettings, PenMappings } from '../types.js';
-import { ImportModal, ExportModal } from '../ui/modals.js';
 import { ViewerService } from '../services/viewer-service.js';
-import { ImportWorkflow } from '../services/import-workflow.js';
 import { DragDropHandler } from '../handlers/drag-drop-handler.js';
 import { exportCurrentPageToPDF } from './export-pdf-command.js';
-import { resetBookHashes } from './reset-hashes-command.js';
 import { ViwoodsSettingTab } from '../settings.js';
-import type { ImporterService } from '../services/importer-service.js';
-import type { PageProcessor } from '../services/page-processor.js';
-
 // Minimal interface for plugin to avoid circular dependency
 export interface IViwoodsPlugin {
     settings: ViwoodsSettings;
@@ -26,16 +20,13 @@ export interface CommandRegistryDependencies {
     app: App;
     settings: ViwoodsSettings;
     penMappings: PenMappings;
-    importerService: ImporterService;
-    pageProcessor: PageProcessor;
     viewerService: ViewerService;
-    importWorkflow: ImportWorkflow;
     dragDropHandler: DragDropHandler;
     plugin: IViwoodsPlugin;
 }
 
 export function registerCommands(plugin: Plugin, deps: CommandRegistryDependencies): void {
-    const { app, settings, penMappings, viewerService, importWorkflow, dragDropHandler, plugin: pluginInstance } = deps;
+    const { app, settings, penMappings, viewerService, dragDropHandler, plugin: pluginInstance } = deps;
 
     // Register commands
     /*

@@ -90,10 +90,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
                 app: this.app,
                 settings: this.settings,
                 penMappings: this.penMappings,
-                importerService: this.importerService,
-                pageProcessor: this.pageProcessor,
                 viewerService: this.viewerService,
-                importWorkflow: this.importWorkflow,
                 dragDropHandler: this.dragDropHandler,
                 plugin: this
             });
@@ -259,7 +256,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
             }
         });
         this.addCommand({
-            id: 'viwoods-sync-status',
+            id: 'sync-status',
             name: 'View sync status',
             callback: () => {
                 const pendingCount = this.autoSyncService?.getPendingChangesCount() || 0;
