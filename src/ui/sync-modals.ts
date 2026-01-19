@@ -15,7 +15,7 @@ export class SourceFolderPickerModal extends Modal {
     onOpen() {
         const { contentEl } = this;
         contentEl.empty();
-        contentEl.createEl('h2', { text: 'Set Viwoods source folder' });
+        contentEl.createEl('h2', { text: 'Set Viwoods source folder path' });
         contentEl.createEl('p', { text: 'Enter the path to the folder containing your Viwoods .note files.' });
         this.inputEl = contentEl.createEl('input', { type: 'text' });
         this.inputEl.placeholder = '/Users/username/Documents/Viwoods';
@@ -60,7 +60,7 @@ export class SyncStatusModal extends Modal {
     onOpen() {
         const { contentEl } = this;
         contentEl.empty();
-        contentEl.createEl('h2', { text: 'Viwoods auto-sync status' });
+        contentEl.createEl('h2', { text: 'Viwoods sync status' });
         const status = this.getStatusFn();
         const statusDiv = contentEl.createEl('div');
         setCssProps(statusDiv, { 'padding': '15px', 'background': 'var(--background-secondary)', 'border-radius': '8px' });

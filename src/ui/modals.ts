@@ -66,7 +66,7 @@ export class EnhancedImportModal extends Modal {
 
             // Use safe DOM methods instead of innerHTML
             const heading = analysisDiv.createEl('h3');
-            heading.textContent = '📊 Change analysis';
+            heading.textContent = '📊 Change summary';
 
             const gridDiv = analysisDiv.createDiv();
             setCssProps(gridDiv, {
@@ -408,7 +408,7 @@ export class ImportSummaryModal extends Modal {
 
         // Use safe DOM methods instead of innerHTML
         const heading = summaryDiv.createEl('h3');
-        heading.textContent = '📊 Import summary';
+        heading.textContent = '📊 Import complete';
 
         const gridDiv = summaryDiv.createDiv();
         setCssProps(gridDiv, {
@@ -466,7 +466,7 @@ export class ImportSummaryModal extends Modal {
             'justify-content': 'center',
             'margin-top': '20px'
         });
-        const okBtn = buttonDiv.createEl('button', { text: 'OK', cls: 'mod-cta' });
+        const okBtn = buttonDiv.createEl('button', { text: 'Ok', cls: 'mod-cta' });
         okBtn.onclick = () => this.close();
     }
 
@@ -490,7 +490,7 @@ export class ExportModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Export Viwoods book' });
+        contentEl.createEl('h2', { text: 'Export Viwoods notes' });
         contentEl.createEl('p', { text: 'Select a book and export format. This will create a package with all pages and media.' });
 
         const bookSelect = contentEl.createEl('select', { cls: 'dropdown' });
@@ -529,7 +529,7 @@ export class ExportModal extends Modal {
         includeGeminiCheck.checked = true;
         const includeGeminiLabel = optionsDiv.createEl('label');
         includeGeminiLabel.setAttribute('for', 'include-gemini');
-        includeGeminiLabel.textContent = ' Include Gemini transcriptions';
+        includeGeminiLabel.textContent = ' Include Gemini transcription';
 
         const buttonDiv = contentEl.createDiv();
         setCssProps(buttonDiv, {
@@ -585,7 +585,7 @@ export class ImportModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Import Viwoods note' });
+        contentEl.createEl('h2', { text: 'Import Viwoods notes' });
         contentEl.createEl('p', { text: 'Select .note files to import. Each file may contain multiple pages that will be organized into a book structure.' });
 
         const recentDiv = contentEl.createDiv();
@@ -595,7 +595,7 @@ export class ImportModal extends Modal {
             'background': 'var(--background-secondary)',
             'border-radius': '5px'
         });
-        recentDiv.createEl('h3', { text: 'Recent books' });
+        recentDiv.createEl('h3', { text: 'Recent notes' });
 
         const booksFolder = this.app.vault.getAbstractFileByPath(this.plugin.settings.notesFolder);
         if (booksFolder instanceof TFolder) {

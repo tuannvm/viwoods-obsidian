@@ -12,7 +12,7 @@ export async function exportCurrentPageToPDF(
     view: MarkdownView
 ): Promise<void> {
     if (!settings.enablePdfExport) {
-        new Notice('PDF export is disabled in settings');
+        new Notice('pdf export is disabled in settings');
         return;
     }
     const file = view.file;
@@ -46,9 +46,9 @@ export async function exportCurrentPageToPDF(
             (penId: number) => getPenStyle(penId, penMappings),
             smoothStrokeData
         );
-        new Notice('PDF exported successfully');
+        new Notice('pdf exported successfully');
     } catch (error) {
         console.error('Failed to export PDF:', error);
-        new Notice('Failed to export PDF');
+        new Notice('Failed to export pdf');
     }
 }

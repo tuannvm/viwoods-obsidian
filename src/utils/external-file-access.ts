@@ -225,7 +225,7 @@ class MobileFileAccess implements FileAccessImpl {
 
     async requestDirectoryAccess(): Promise<boolean> {
         if (!('showDirectoryPicker' in window)) {
-            new Notice('File system access API not supported on this device');
+            new Notice('File system access api not supported on this device');
             return false;
         }
 

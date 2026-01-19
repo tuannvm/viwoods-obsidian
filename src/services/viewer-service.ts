@@ -190,7 +190,7 @@ export class ViewerService {
             'border-radius': '4px'
         });
 
-        const pdfBtn = btnGroup.createEl('button', { text: 'PDF' });
+        const pdfBtn = btnGroup.createEl('button', { text: 'pdf' });
         setCssProps(pdfBtn, {
             'padding': '6px 12px',
             'cursor': 'pointer',
@@ -325,7 +325,7 @@ export class ViewerService {
         const exportPDF = async () => {
             try {
                 if (!window.jspdf) {
-                    new Notice('jsPDF library not loaded');
+                    new Notice('jspdf library not loaded');
                     return;
                 }
 
@@ -394,11 +394,11 @@ export class ViewerService {
                     }
                 } catch (error: unknown) {
                     log.error('Failed to save PDF:', error);
-                    new Notice('Failed to save PDF: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                    new Notice('Failed to save pdf: ' + (error instanceof Error ? error.message : 'Unknown error'));
                 }
 
             } catch (error: unknown) {
-                new Notice('PDF export failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+                new Notice('pdf export failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
             }
         };
 
