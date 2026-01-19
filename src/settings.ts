@@ -20,9 +20,9 @@ export class ViwoodsSettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
-        // Use setHeading for proper heading element
-        const heading = containerEl.createEl('h2');
-        heading.setText('Viwoods Obsidian settings');
+        new Setting(containerEl)
+            .setHeading()
+            .setName('Viwoods Obsidian settings');
 
         // ========================================================================
         // Basic Settings

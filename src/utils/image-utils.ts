@@ -18,9 +18,9 @@ export async function processImageWithBackground(blob: Blob, backgroundColor: st
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
-            canvas.toBlob(async (processedBlob) => {
+            canvas.toBlob((processedBlob) => {
                 if (processedBlob) {
-                    resolve(await processedBlob.arrayBuffer());
+                    void processedBlob.arrayBuffer().then(resolve).catch(reject);
                 } else {
                     reject(new Error('Failed to process image'));
                 }

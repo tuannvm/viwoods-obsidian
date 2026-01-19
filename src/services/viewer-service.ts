@@ -3,6 +3,7 @@
 import { App, TFile, normalizePath, Notice } from 'obsidian';
 import type { ViwoodsSettings } from '../types.js';
 import { log } from '../utils/logger.js';
+import { setCssProps } from '../utils/dom-utils.js';
 
 export class ViewerService {
     constructor(
@@ -113,18 +114,35 @@ export class ViewerService {
         return detectedStrokes;
     }
 
-    private createViewerUI(el: HTMLElement, strokeFileName: string, strokeData: number[][], detectedStrokes: number[][][]): void {
+    private createViewerUI(el: HTMLElement, strokeFileName: string, _strokeData: number[][], detectedStrokes: number[][][]): void {
         const container = el.createDiv({ cls: 'viwoods-svg-viewer' });
-        container.style.cssText = 'background: var(--background-secondary); padding: 15px; border-radius: 8px; margin: 10px 0;';
+        setCssProps(container, {
+            'background': 'var(--background-secondary)',
+            'padding': '15px',
+            'border-radius': '8px',
+            'margin': '10px 0'
+        });
 
         const header = container.createDiv();
-        header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px; background: var(--background-primary); border-radius: 5px; margin-bottom: 10px;';
+        setCssProps(header, {
+            'display': 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'center',
+            'cursor': 'pointer',
+            'padding': '10px',
+            'background': 'var(--background-primary)',
+            'border-radius': '5px',
+            'margin-bottom': '10px'
+        });
 
         const headerTitle = header.createEl('h4', { text: 'Vector Viewer' });
-        headerTitle.style.cssText = 'margin: 0; color: var(--text-normal);';
+        setCssProps(headerTitle, {
+            'margin': '0',
+            'color': 'var(--text-normal)'
+        });
 
         const toggleIcon = header.createEl('span', { text: this.settings.showSvgViewer ? '▼' : '▶' });
-        toggleIcon.style.cssText = 'color: var(--text-muted);';
+        setCssProps(toggleIcon, { 'color': 'var(--text-muted)' });
 
         const contentWrapper = container.createDiv();
         contentWrapper.style.display = this.settings.showSvgViewer ? 'block' : 'none';
@@ -137,7 +155,16 @@ export class ViewerService {
         });
 
         const controls = contentWrapper.createDiv();
-        controls.style.cssText = 'display: flex; flex-wrap: wrap; gap: 15px; padding: 10px; background: var(--background-primary); border-radius: 5px; margin-bottom: 15px; align-items: center;';
+        setCssProps(controls, {
+            'display': 'flex',
+            'flex-wrap': 'wrap',
+            'gap': '15px',
+            'padding': '10px',
+            'background': 'var(--background-primary)',
+            'border-radius': '5px',
+            'margin-bottom': '15px',
+            'align-items': 'center'
+        });
 
         const smoothSlider = this.createControl(controls, 'Smooth:', 'range', '0', '20', this.settings.defaultSmoothness.toString());
         const widthSlider = this.createControl(controls, 'Width:', 'range', '0.5', '10', '2.5', '0.5');
@@ -146,22 +173,47 @@ export class ViewerService {
         const speedSlider = this.createControl(controls, 'Speed:', 'range', '1', '50', this.settings.defaultReplaySpeed.toString());
 
         const btnGroup = controls.createDiv();
-        btnGroup.style.cssText = 'display: flex; gap: 8px; margin-left: auto;';
+        setCssProps(btnGroup, {
+            'display': 'flex',
+            'gap': '8px',
+            'margin-left': 'auto'
+        });
 
         const replayBtn = btnGroup.createEl('button', { text: 'Play' });
-        replayBtn.style.cssText = 'padding: 6px 12px; cursor: pointer; background: var(--interactive-accent); color: var(--text-on-accent); border: none; border-radius: 4px;';
+        setCssProps(replayBtn, {
+            'padding': '6px 12px',
+            'cursor': 'pointer',
+            'background': 'var(--interactive-accent)',
+            'color': 'var(--text-on-accent)',
+            'border': 'none',
+            'border-radius': '4px'
+        });
 
         const pdfBtn = btnGroup.createEl('button', { text: 'PDF' });
-        pdfBtn.style.cssText = 'padding: 6px 12px; cursor: pointer; background: var(--interactive-accent); color: var(--text-on-accent); border: none; border-radius: 4px;';
+        setCssProps(pdfBtn, {
+            'padding': '6px 12px',
+            'cursor': 'pointer',
+            'background': 'var(--interactive-accent)',
+            'color': 'var(--text-on-accent)',
+            'border': 'none',
+            'border-radius': '4px'
+        });
 
         const svgContainer = contentWrapper.createDiv();
-        svgContainer.style.cssText = 'display: flex; justify-content: center; background: white; border-radius: 5px; padding: 20px; position: relative;';
+        setCssProps(svgContainer, {
+            'display': 'flex',
+            'justify-content': 'center',
+            'background': 'white',
+            'border-radius': '5px',
+            'padding': '20px',
+            'position': 'relative'
+        });
 
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGElement;
         svg.setAttribute('viewBox', '0 0 595 842');
         svg.setAttribute('width', '100%');
         svg.setAttribute('height', 'auto');
-        svg.style.background = 'white';
+        setCssProps(svg, { 'background': 'white' });
         svgContainer.appendChild(svg);
 
         // Render functions
@@ -361,23 +413,37 @@ export class ViewerService {
 
     private createControl(parent: HTMLElement, label: string, type: string, min: string, max: string, value: string, step = '1'): HTMLInputElement {
         const group = parent.createDiv();
-        group.style.cssText = 'display: flex; align-items: center; gap: 8px;';
-        group.createEl('label', { text: label }).style.cssText = 'min-width: 70px; font-weight: 500;';
+        setCssProps(group, {
+            'display': 'flex',
+            'align-items': 'center',
+            'gap': '8px'
+        });
+        const labelEl = group.createEl('label', { text: label });
+        setCssProps(labelEl, {
+            'min-width': '70px',
+            'font-weight': '500'
+        });
         const input = group.createEl('input', { type }) as HTMLInputElement;
         if (type === 'range') {
             input.min = min;
             input.max = max;
             input.step = step;
             input.value = value;
-            input.style.cssText = 'width: 120px;';
+            setCssProps(input, { 'width': '120px' });
             const valueSpan = group.createEl('span', { text: value });
-            valueSpan.style.cssText = 'min-width: 30px; font-weight: bold;';
+            setCssProps(valueSpan, {
+                'min-width': '30px',
+                'font-weight': 'bold'
+            });
             input.addEventListener('input', () => {
                 valueSpan.textContent = input.value;
             });
         } else if (type === 'color') {
             input.value = value;
-            input.style.cssText = 'width: 50px; height: 30px;';
+            setCssProps(input, {
+                'width': '50px',
+                'height': '30px'
+            });
         }
         return input;
     }

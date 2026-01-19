@@ -14,6 +14,7 @@ import type {
     ImportSummary,
     ViwoodsSettings
 } from '../types.js';
+import { setCssProps } from '../utils/dom-utils.js';
 
 // Forward declaration for plugin interface to avoid circular dependency
 export interface IViwoodsImporterPlugin {
@@ -56,14 +57,24 @@ export class EnhancedImportModal extends Modal {
 
         if (this.analysis) {
             const analysisDiv = contentEl.createDiv({ cls: 'import-analysis' });
-            analysisDiv.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 15px;';
+            setCssProps(analysisDiv, {
+                'padding': '15px',
+                'background': 'var(--background-secondary)',
+                'border-radius': '8px',
+                'margin-bottom': '15px'
+            });
 
             // Use safe DOM methods instead of innerHTML
             const heading = analysisDiv.createEl('h3');
             heading.textContent = '📊 Change analysis';
 
             const gridDiv = analysisDiv.createDiv();
-            gridDiv.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;';
+            setCssProps(gridDiv, {
+                'display': 'grid',
+                'grid-template-columns': '1fr 1fr',
+                'gap': '10px',
+                'margin-top': '10px'
+            });
 
             const newPagesDiv = gridDiv.createDiv();
             newPagesDiv.textContent = `🆕 New pages: ${this.analysis.summary.newPages.length}`;
@@ -93,7 +104,12 @@ export class EnhancedImportModal extends Modal {
             }
         } else {
             const stats = contentEl.createDiv({ cls: 'import-stats' });
-            stats.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 15px;';
+            setCssProps(stats, {
+                'padding': '15px',
+                'background': 'var(--background-secondary)',
+                'border-radius': '8px',
+                'margin-bottom': '15px'
+            });
             const existingPages = this.existingManifest ? Object.keys(this.existingManifest.importedPages).length : 0;
 
             // Use safe DOM APIs - bookName is user input
@@ -104,9 +120,12 @@ export class EnhancedImportModal extends Modal {
         }
 
         const modeContainer = contentEl.createDiv();
-        modeContainer.createEl('label', { text: 'Import mode:' });
+        modeContainer.createEl('label', { text: 'Import mode' });
         const importMode = modeContainer.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
-        importMode.style.cssText = 'width: 100%; margin: 10px 0;';
+        setCssProps(importMode, {
+            'width': '100%',
+            'margin': '10px 0'
+        });
 
         let defaultMode = 'all';
         if (this.analysis) {
@@ -134,8 +153,8 @@ export class EnhancedImportModal extends Modal {
         const allOption = importMode.createEl('option', { value: 'all', text: `Import all pages (${this.bookResult.pages.length} pages)` });
         if (!this.existingManifest || (defaultMode === 'all' && importMode.options.length === 1)) allOption.selected = true;
 
-        importMode.createEl('option', { value: 'range', text: 'Import page range...' });
-        importMode.createEl('option', { value: 'select', text: 'Select specific pages...' });
+        importMode.createEl('option', { value: 'range', text: 'Import page range' });
+        importMode.createEl('option', { value: 'select', text: 'Select specific pages' });
 
         if (defaultMode === 'none' && this.analysis) {
             const noneOption = importMode.createEl('option', { value: 'none', text: 'No changes to import' });
@@ -143,43 +162,66 @@ export class EnhancedImportModal extends Modal {
         }
 
         const rangeContainer = contentEl.createDiv();
-        rangeContainer.style.cssText = 'display: none; margin: 10px 0;';
-        rangeContainer.createEl('label', { text: 'Page range: ' });
+        setCssProps(rangeContainer, {
+            'display': 'none',
+            'margin': '10px 0'
+        });
+        rangeContainer.createEl('label', { text: 'Page range' });
         const rangeFrom = rangeContainer.createEl('input', { type: 'number' }) as HTMLInputElement;
-        rangeFrom.style.cssText = 'width: 60px;';
+        setCssProps(rangeFrom, { 'width': '60px' });
         rangeFrom.min = '1';
         rangeFrom.max = this.bookResult.pages.length.toString();
         rangeFrom.value = '1';
         rangeContainer.createEl('span', { text: ' to ' });
         const rangeTo = rangeContainer.createEl('input', { type: 'number' }) as HTMLInputElement;
-        rangeTo.style.cssText = 'width: 60px;';
+        setCssProps(rangeTo, { 'width': '60px' });
         rangeTo.min = '1';
         rangeTo.max = this.bookResult.pages.length.toString();
         rangeTo.value = Math.min(10, this.bookResult.pages.length).toString();
 
         const pageSelector = contentEl.createDiv();
         pageSelector.style.display = 'none';
-        pageSelector.createEl('p', { text: 'Select pages to import:' });
+        pageSelector.createEl('p', { text: 'Select pages to import' });
 
         const searchContainer = pageSelector.createDiv();
-        searchContainer.style.cssText = 'margin: 10px 0;';
-        const searchInput = searchContainer.createEl('input', { type: 'text', placeholder: 'Search pages (e.g., "1-10", "audio", "new")...' }) as HTMLInputElement;
-        searchInput.style.cssText = 'width: 100%; padding: 5px;';
+        setCssProps(searchContainer, { 'margin': '10px 0' });
+        const searchInput = searchContainer.createEl('input', { type: 'text', placeholder: 'Search pages (e.g., "1-10", "audio", "new")' }) as HTMLInputElement;
+        setCssProps(searchInput, {
+            'width': '100%',
+            'padding': '5px'
+        });
 
         const filterButtons = pageSelector.createDiv();
-        filterButtons.style.cssText = 'margin: 10px 0; display: flex; gap: 5px; flex-wrap: wrap;';
-        const selectAllBtn = filterButtons.createEl('button', { text: 'Select All' });
-        const selectNoneBtn = filterButtons.createEl('button', { text: 'Select None' });
-        const selectNewBtn = filterButtons.createEl('button', { text: 'Select New' });
-        const selectModifiedBtn = filterButtons.createEl('button', { text: 'Select Modified' });
-        const selectAudioBtn = filterButtons.createEl('button', { text: 'Select Audio' });
+        setCssProps(filterButtons, {
+            'margin': '10px 0',
+            'display': 'flex',
+            'gap': '5px',
+            'flex-wrap': 'wrap'
+        });
+        const selectAllBtn = filterButtons.createEl('button', { text: 'Select all' });
+        const selectNoneBtn = filterButtons.createEl('button', { text: 'Select none' });
+        const selectNewBtn = filterButtons.createEl('button', { text: 'Select new' });
+        const selectModifiedBtn = filterButtons.createEl('button', { text: 'Select modified' });
+        const selectAudioBtn = filterButtons.createEl('button', { text: 'Select audio' });
 
         const pageGrid = pageSelector.createDiv();
-        pageGrid.style.cssText = 'display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; max-height: 300px; overflow-y: auto; padding: 10px; background: var(--background-primary); border-radius: 5px;';
+        setCssProps(pageGrid, {
+            'display': 'grid',
+            'grid-template-columns': 'repeat(10, 1fr)',
+            'gap': '5px',
+            'max-height': '300px',
+            'overflow-y': 'auto',
+            'padding': '10px',
+            'background': 'var(--background-primary)',
+            'border-radius': '5px'
+        });
 
         for (const page of this.bookResult.pages) {
             const pageDiv = pageGrid.createDiv();
-            pageDiv.style.cssText = 'text-align: center; padding: 5px;';
+            setCssProps(pageDiv, {
+                'text-align': 'center',
+                'padding': '5px'
+            });
             const change = this.analysis?.changes.find(c => c.pageNum === page.pageNum);
             const checkbox = pageDiv.createEl('input', { type: 'checkbox' }) as HTMLInputElement;
             checkbox.id = `page-${page.pageNum}`;
@@ -187,7 +229,11 @@ export class EnhancedImportModal extends Modal {
             this.checkboxes.set(page.pageNum, checkbox);
             const label = pageDiv.createEl('label');
             label.setAttribute('for', `page-${page.pageNum}`);
-            label.style.cssText = 'display: block; font-size: 11px; cursor: pointer;';
+            setCssProps(label, {
+                'display': 'block',
+                'font-size': '11px',
+                'cursor': 'pointer'
+            });
             let labelText = `${page.pageNum}`;
             if (page.audio) labelText += '🎙️';
             if (change) {
@@ -250,7 +296,12 @@ export class EnhancedImportModal extends Modal {
         });
 
         const buttonContainer = contentEl.createDiv();
-        buttonContainer.style.cssText = 'display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;';
+        setCssProps(buttonContainer, {
+            'display': 'flex',
+            'gap': '10px',
+            'justify-content': 'flex-end',
+            'margin-top': '20px'
+        });
         const cancelBtn = buttonContainer.createEl('button', { text: 'Cancel' });
         const importBtn = buttonContainer.createEl('button', { text: 'Import', cls: 'mod-cta' });
 
@@ -300,14 +351,20 @@ export class ProgressModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Importing Pages' });
+        contentEl.createEl('h2', { text: 'Importing pages' });
         this.statusText = contentEl.createEl('p', { text: 'Starting import...' });
         this.progressBar = contentEl.createEl('progress') as HTMLProgressElement;
-        this.progressBar.style.cssText = 'width: 100%; height: 20px;';
+        setCssProps(this.progressBar, {
+            'width': '100%',
+            'height': '20px'
+        });
         this.progressBar.max = this.totalPages;
         this.progressBar.value = 0;
         const progressText = contentEl.createDiv();
-        progressText.style.cssText = 'text-align: center; margin-top: 10px;';
+        setCssProps(progressText, {
+            'text-align': 'center',
+            'margin-top': '10px'
+        });
         progressText.textContent = `0 / ${this.totalPages}`;
     }
 
@@ -343,14 +400,23 @@ export class ImportSummaryModal extends Modal {
         const { contentEl } = this;
         contentEl.createEl('h2', { text: 'Import complete' });
         const summaryDiv = contentEl.createDiv({ cls: 'import-summary' });
-        summaryDiv.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px;';
+        setCssProps(summaryDiv, {
+            'padding': '15px',
+            'background': 'var(--background-secondary)',
+            'border-radius': '8px'
+        });
 
         // Use safe DOM methods instead of innerHTML
         const heading = summaryDiv.createEl('h3');
         heading.textContent = '📊 Import summary';
 
         const gridDiv = summaryDiv.createDiv();
-        gridDiv.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;';
+        setCssProps(gridDiv, {
+            'display': 'grid',
+            'grid-template-columns': '1fr 1fr',
+            'gap': '10px',
+            'margin-top': '10px'
+        });
 
         if (this.summary.newPages.length > 0) {
             const newPagesDiv = gridDiv.createDiv();
@@ -366,26 +432,40 @@ export class ImportSummaryModal extends Modal {
         }
         if (this.summary.errors.length > 0) {
             const errorsDiv = gridDiv.createDiv();
-            errorsDiv.style.cssText = 'color: var(--text-error);';
+            setCssProps(errorsDiv, { 'color': 'var(--text-error)' });
             errorsDiv.textContent = `❌ Errors: ${this.summary.errors.length}`;
         }
 
         if (this.summary.errors.length > 0) {
             const errorDiv = contentEl.createDiv({ cls: 'import-errors' });
-            errorDiv.style.cssText = 'margin-top: 15px; padding: 10px; background: var(--background-secondary-alt); border-radius: 5px;';
-            errorDiv.createEl('h4', { text: 'Import errors:' });
+            setCssProps(errorDiv, {
+                'margin-top': '15px',
+                'padding': '10px',
+                'background': 'var(--background-secondary-alt)',
+                'border-radius': '5px'
+            });
+            errorDiv.createEl('h4', { text: 'Import errors' });
             const errorList = errorDiv.createEl('ul');
             this.summary.errors.forEach(error => errorList.createEl('li', { text: `Page ${error.page}: ${error.error}` }));
         }
 
         if (this.backupPath) {
             const backupDiv = contentEl.createDiv();
-            backupDiv.style.cssText = 'margin-top: 15px; padding: 10px; background: var(--background-modifier-success); border-radius: 5px;';
+            setCssProps(backupDiv, {
+                'margin-top': '15px',
+                'padding': '10px',
+                'background': 'var(--background-modifier-success)',
+                'border-radius': '5px'
+            });
             backupDiv.createEl('p', { text: `✅ Manifest backup created: ${this.backupPath.split('/').pop()}` });
         }
 
         const buttonDiv = contentEl.createDiv();
-        buttonDiv.style.cssText = 'display: flex; justify-content: center; margin-top: 20px;';
+        setCssProps(buttonDiv, {
+            'display': 'flex',
+            'justify-content': 'center',
+            'margin-top': '20px'
+        });
         const okBtn = buttonDiv.createEl('button', { text: 'OK', cls: 'mod-cta' });
         okBtn.onclick = () => this.close();
     }
@@ -414,7 +494,10 @@ export class ExportModal extends Modal {
         contentEl.createEl('p', { text: 'Select a book and export format. This will create a package with all pages and media.' });
 
         const bookSelect = contentEl.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
-        bookSelect.style.cssText = 'width: 100%; margin: 10px 0;';
+        setCssProps(bookSelect, {
+            'width': '100%',
+            'margin': '10px 0'
+        });
         const booksFolder = this.app.vault.getAbstractFileByPath(this.plugin.settings.notesFolder);
         if (booksFolder instanceof TFolder) {
             for (const child of booksFolder.children) {
@@ -422,15 +505,18 @@ export class ExportModal extends Modal {
             }
         }
 
-        contentEl.createEl('label', { text: 'Export format:' });
+        contentEl.createEl('label', { text: 'Export format' });
         const formatSelect = contentEl.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
-        formatSelect.style.cssText = 'width: 100%; margin: 10px 0;';
+        setCssProps(formatSelect, {
+            'width': '100%',
+            'margin': '10px 0'
+        });
         formatSelect.createEl('option', { value: 'markdown', text: 'Markdown with media (ZIP)' });
         formatSelect.createEl('option', { value: 'pdf', text: 'PDF (single file)' });
         formatSelect.createEl('option', { value: 'html', text: 'HTML (standalone)' });
 
         const optionsDiv = contentEl.createDiv();
-        optionsDiv.style.cssText = 'margin: 15px 0;';
+        setCssProps(optionsDiv, { 'margin': '15px 0' });
         const includeAudioCheck = optionsDiv.createEl('input', { type: 'checkbox' }) as HTMLInputElement;
         includeAudioCheck.id = 'include-audio';
         includeAudioCheck.checked = true;
@@ -446,11 +532,16 @@ export class ExportModal extends Modal {
         includeGeminiLabel.textContent = ' Include Gemini transcriptions';
 
         const buttonDiv = contentEl.createDiv();
-        buttonDiv.style.cssText = 'display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;';
+        setCssProps(buttonDiv, {
+            'display': 'flex',
+            'justify-content': 'flex-end',
+            'gap': '10px',
+            'margin-top': '20px'
+        });
         const cancelBtn = buttonDiv.createEl('button', { text: 'Cancel' });
         const exportBtn = buttonDiv.createEl('button', { text: 'Export', cls: 'mod-cta' });
 
-        exportBtn.onclick = async () => {
+        exportBtn.onclick = () => {
             const bookPath = bookSelect.value;
             const format = formatSelect.value;
             const includeAudio = includeAudioCheck.checked;
@@ -498,7 +589,12 @@ export class ImportModal extends Modal {
         contentEl.createEl('p', { text: 'Select .note files to import. Each file may contain multiple pages that will be organized into a book structure.' });
 
         const recentDiv = contentEl.createDiv();
-        recentDiv.style.cssText = 'margin: 15px 0; padding: 10px; background: var(--background-secondary); border-radius: 5px;';
+        setCssProps(recentDiv, {
+            'margin': '15px 0',
+            'padding': '10px',
+            'background': 'var(--background-secondary)',
+            'border-radius': '5px'
+        });
         recentDiv.createEl('h3', { text: 'Recent books' });
 
         const booksFolder = this.app.vault.getAbstractFileByPath(this.plugin.settings.notesFolder);
@@ -506,10 +602,13 @@ export class ImportModal extends Modal {
             const recentBooks = booksFolder.children.filter(child => child instanceof TFolder).slice(0, 5);
             if (recentBooks.length > 0) {
                 const bookList = recentDiv.createEl('ul');
-                bookList.style.cssText = 'list-style: none; padding: 0;';
+                setCssProps(bookList, {
+                    'list-style': 'none',
+                    'padding': '0'
+                });
                 for (const book of recentBooks) {
                     const li = bookList.createEl('li');
-                    li.style.cssText = 'padding: 3px 0;';
+                    setCssProps(li, { 'padding': '3px 0' });
                     li.textContent = `📚 ${book.name}`;
                 }
             } else {
@@ -522,7 +621,13 @@ export class ImportModal extends Modal {
         this.fileInput.style.marginBottom = '20px';
 
         const dropArea = contentEl.createDiv({ cls: 'drop-area' });
-        dropArea.style.cssText = 'border: 2px dashed var(--background-modifier-border); border-radius: 8px; padding: 30px; text-align: center; margin: 15px 0;';
+        setCssProps(dropArea, {
+            'border': '2px dashed var(--background-modifier-border)',
+            'border-radius': '8px',
+            'padding': '30px',
+            'text-align': 'center',
+            'margin': '15px 0'
+        });
         dropArea.createEl('p', { text: '📥 Drag and drop .note files here' });
 
         dropArea.addEventListener('dragover', (e) => {
@@ -550,7 +655,12 @@ export class ImportModal extends Modal {
         });
 
         const buttonDiv = contentEl.createDiv();
-        buttonDiv.style.cssText = 'display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;';
+        setCssProps(buttonDiv, {
+            'display': 'flex',
+            'justify-content': 'flex-end',
+            'gap': '10px',
+            'margin-top': '20px'
+        });
         const cancelBtn = buttonDiv.createEl('button', { text: 'Cancel' });
         const importBtn = buttonDiv.createEl('button', { text: 'Import', cls: 'mod-cta' });
 
