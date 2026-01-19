@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS: ViwoodsSettings = {
     imagesFolder: 'Attachments',
     audioFolder: 'Attachments',
     strokesFolder: 'Attachments',
-    pdfFolder: 'PDFs',
+    pdfFolder: 'pdfs',
 
     // Import options
     dateFormat: 'YYYY-MM-DD HH:mm:ss',
