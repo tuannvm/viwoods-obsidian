@@ -206,7 +206,7 @@ export class PageProcessor {
             if (existingImage instanceof TFile) {
                 if (needsImageUpdate || backgroundChanged) {
                     const processedImage = await processImageWithBackground(page.image.blob, this.settings.backgroundColor);
-                    await this.app.vault.delete(existingImage);
+                    await this.app.fileManager.trashFile(existingImage);
                     return await this.app.vault.createBinary(normalizedImagePath, processedImage);
                 }
                 return existingImage;
@@ -242,7 +242,7 @@ export class PageProcessor {
 
         if (existingAudio instanceof TFile) {
             if (shouldUpdate) {
-                await this.app.vault.delete(existingAudio);
+                await this.app.fileManager.trashFile(existingAudio);
                 await this.app.vault.createBinary(normalizedAudioPath, await audio.blob.arrayBuffer());
             }
         } else {

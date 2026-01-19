@@ -3,6 +3,7 @@
 import { App, Notice, Modal, TFolder } from 'obsidian';
 import type { ViwoodsSettings } from '../types.js';
 import { loadManifest, saveManifest, ensureFolder } from '../utils/file-utils.js';
+import { setCssProps } from '../utils/dom-utils.js';
 
 export function resetBookHashes(app: App, settings: ViwoodsSettings): void {
     const booksFolder = app.vault.getAbstractFileByPath(settings.notesFolder);
@@ -16,12 +17,12 @@ export function resetBookHashes(app: App, settings: ViwoodsSettings): void {
         return;
     }
     const modal = new Modal(app);
-    modal.titleEl.setText('Select Book to Reset');
+    modal.titleEl.setText('Select book to reset');
     const select = modal.contentEl.createEl('select');
     books.forEach(book => select.createEl('option', { value: book, text: book }));
     const buttonDiv = modal.contentEl.createDiv();
-    buttonDiv.style.cssText = 'margin-top: 20px; text-align: right;';
-    const resetBtn = buttonDiv.createEl('button', { text: 'Reset Hashes', cls: 'mod-cta' });
+    setCssProps(buttonDiv, { 'margin-top': '20px', 'text-align': 'right' });
+    const resetBtn = buttonDiv.createEl('button', { text: 'Reset hashes', cls: 'mod-cta' });
     resetBtn.onclick = async () => {
         const bookName = select.value;
         const manifestPath = `${settings.notesFolder}/${bookName}/.import-manifest.json`;

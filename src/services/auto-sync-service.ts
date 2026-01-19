@@ -146,8 +146,8 @@ export class AutoSyncService {
         const intervalMs = this.settings.pollingIntervalMinutes * 60 * 1000;
 
         // Start polling
-        this.pollingIntervalId = window.setInterval(async () => {
-            await this.scanForChanges();
+        this.pollingIntervalId = window.setInterval(() => {
+            void this.scanForChanges();
         }, intervalMs);
 
         log.debug(`Polling started: interval ${this.settings.pollingIntervalMinutes} minutes`);

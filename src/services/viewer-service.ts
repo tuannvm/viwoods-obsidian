@@ -135,7 +135,7 @@ export class ViewerService {
             'margin-bottom': '10px'
         });
 
-        const headerTitle = header.createEl('h4', { text: 'Vector Viewer' });
+        const headerTitle = header.createEl('h4', { text: 'Vector viewer' });
         setCssProps(headerTitle, {
             'margin': '0',
             'color': 'var(--text-normal)'
@@ -406,7 +406,7 @@ export class ViewerService {
         opacitySlider.addEventListener('input', () => renderStrokes());
         colorPicker.addEventListener('input', () => renderStrokes());
         replayBtn.addEventListener('click', startReplay);
-        pdfBtn.addEventListener('click', exportPDF);
+        pdfBtn.addEventListener('click', () => void exportPDF());
 
         renderStrokes();
     }
@@ -423,7 +423,7 @@ export class ViewerService {
             'min-width': '70px',
             'font-weight': '500'
         });
-        const input = group.createEl('input', { type }) as HTMLInputElement;
+        const input = group.createEl('input', { type });
         if (type === 'range') {
             input.min = min;
             input.max = max;

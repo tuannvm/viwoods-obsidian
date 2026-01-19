@@ -1,5 +1,6 @@
 // utils/platform.ts - Platform detection utilities for Viwoods Obsidian
 
+import { Platform } from 'obsidian';
 import type { ViwoodsSettings } from '../types.js';
 
 /**
@@ -7,12 +8,10 @@ import type { ViwoodsSettings } from '../types.js';
  * @returns 'desktop' for Electron-based Obsidian, 'mobile' for Capacitor-based
  */
 export function getPlatform(): 'desktop' | 'mobile' {
-    const userAgent = typeof navigator === 'undefined' ? '' : navigator.userAgent;
-    // Obsidian Desktop uses Electron
-    if (userAgent.includes('Electron')) {
+    // Use Obsidian's Platform API
+    if (Platform.isDesktopApp) {
         return 'desktop';
     }
-    // Obsidian Mobile uses Capacitor
     return 'mobile';
 }
 

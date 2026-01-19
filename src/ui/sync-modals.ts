@@ -1,6 +1,7 @@
 // ui/sync-modals.ts - UI modals for Viwoods Auto-Sync
 
 import { App, Modal, Notice } from 'obsidian';
+import { setCssProps } from '../utils/dom-utils.js';
 
 export class SourceFolderPickerModal extends Modal {
     private onChoose: (folderPath: string) => void;
@@ -18,9 +19,9 @@ export class SourceFolderPickerModal extends Modal {
         contentEl.createEl('p', { text: 'Enter the path to the folder containing your Viwoods .note files.' });
         this.inputEl = contentEl.createEl('input', { type: 'text' });
         this.inputEl.placeholder = '/Users/username/Documents/Viwoods';
-        this.inputEl.style.cssText = 'width: 100%; margin: 15px 0; padding: 8px;';
+        setCssProps(this.inputEl, { 'width': '100%', 'margin': '15px 0', 'padding': '8px' });
         const buttonContainer = contentEl.createEl('div');
-        buttonContainer.style.cssText = 'display: flex; gap: 10px; justify-content: flex-end;';
+        setCssProps(buttonContainer, { 'display': 'flex', 'gap': '10px', 'justify-content': 'flex-end' });
         const cancelBtn = buttonContainer.createEl('button', { text: 'Cancel' });
         const okBtn = buttonContainer.createEl('button', { text: 'Save', cls: 'mod-cta' });
         cancelBtn.onclick = () => this.close();
@@ -62,7 +63,7 @@ export class SyncStatusModal extends Modal {
         contentEl.createEl('h2', { text: 'Viwoods Auto-Sync Status' });
         const status = this.getStatusFn();
         const statusDiv = contentEl.createEl('div');
-        statusDiv.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px;';
+        setCssProps(statusDiv, { 'padding': '15px', 'background': 'var(--background-secondary)', 'border-radius': '8px' });
         
         const p1 = statusDiv.createEl('p');
         p1.createEl('strong').textContent = 'Status: ';

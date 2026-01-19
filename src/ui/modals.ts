@@ -121,7 +121,7 @@ export class EnhancedImportModal extends Modal {
 
         const modeContainer = contentEl.createDiv();
         modeContainer.createEl('label', { text: 'Import mode' });
-        const importMode = modeContainer.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
+        const importMode = modeContainer.createEl('select', { cls: 'dropdown' });
         setCssProps(importMode, {
             'width': '100%',
             'margin': '10px 0'
@@ -167,25 +167,25 @@ export class EnhancedImportModal extends Modal {
             'margin': '10px 0'
         });
         rangeContainer.createEl('label', { text: 'Page range' });
-        const rangeFrom = rangeContainer.createEl('input', { type: 'number' }) as HTMLInputElement;
+        const rangeFrom = rangeContainer.createEl('input', { type: 'number' });
         setCssProps(rangeFrom, { 'width': '60px' });
         rangeFrom.min = '1';
         rangeFrom.max = this.bookResult.pages.length.toString();
         rangeFrom.value = '1';
         rangeContainer.createEl('span', { text: ' to ' });
-        const rangeTo = rangeContainer.createEl('input', { type: 'number' }) as HTMLInputElement;
+        const rangeTo = rangeContainer.createEl('input', { type: 'number' });
         setCssProps(rangeTo, { 'width': '60px' });
         rangeTo.min = '1';
         rangeTo.max = this.bookResult.pages.length.toString();
         rangeTo.value = Math.min(10, this.bookResult.pages.length).toString();
 
         const pageSelector = contentEl.createDiv();
-        pageSelector.style.display = 'none';
+        setCssProps(pageSelector, { 'display': 'none' });
         pageSelector.createEl('p', { text: 'Select pages to import' });
 
         const searchContainer = pageSelector.createDiv();
         setCssProps(searchContainer, { 'margin': '10px 0' });
-        const searchInput = searchContainer.createEl('input', { type: 'text', placeholder: 'Search pages (e.g., "1-10", "audio", "new")' }) as HTMLInputElement;
+        const searchInput = searchContainer.createEl('input', { type: 'text', placeholder: 'Search pages (e.g., "1-10", "audio", "new")' });
         setCssProps(searchInput, {
             'width': '100%',
             'padding': '5px'
@@ -223,7 +223,7 @@ export class EnhancedImportModal extends Modal {
                 'padding': '5px'
             });
             const change = this.analysis?.changes.find(c => c.pageNum === page.pageNum);
-            const checkbox = pageDiv.createEl('input', { type: 'checkbox' }) as HTMLInputElement;
+            const checkbox = pageDiv.createEl('input', { type: 'checkbox' });
             checkbox.id = `page-${page.pageNum}`;
             checkbox.checked = change?.type === 'new' || change?.type === 'modified' || false;
             this.checkboxes.set(page.pageNum, checkbox);
@@ -238,9 +238,9 @@ export class EnhancedImportModal extends Modal {
             if (page.audio) labelText += '🎙️';
             if (change) {
                 switch (change.type) {
-                    case 'new': labelText += '🆕'; label.style.color = 'var(--text-accent)'; break;
-                    case 'modified': labelText += '🔄'; label.style.color = 'var(--text-warning)'; break;
-                    case 'unchanged': labelText += '✓'; label.style.opacity = '0.6'; break;
+                    case 'new': labelText += '🆕'; setCssProps(label, { 'color': 'var(--text-accent)' }); break;
+                    case 'modified': labelText += '🔄'; setCssProps(label, { 'color': 'var(--text-warning)' }); break;
+                    case 'unchanged': labelText += '✓'; setCssProps(label, { 'opacity': '0.6' }); break;
                 }
             }
             label.textContent = labelText;
@@ -265,7 +265,7 @@ export class EnhancedImportModal extends Modal {
                 if (query.includes('audio') && pageDiv.dataset.hasAudio === 'true') visible = true;
                 if (query.includes('new') && pageDiv.dataset.changeType === 'new') visible = true;
                 if (query.includes('modified') && pageDiv.dataset.changeType === 'modified') visible = true;
-                (pageDiv as HTMLElement).style.display = visible || query === '' ? 'block' : 'none';
+                setCssProps(pageDiv, { 'display': visible || query === '' ? 'block' : 'none' });
             });
         });
 
@@ -291,8 +291,8 @@ export class EnhancedImportModal extends Modal {
         };
 
         importMode.addEventListener('change', () => {
-            rangeContainer.style.display = importMode.value === 'range' ? 'block' : 'none';
-            pageSelector.style.display = importMode.value === 'select' ? 'block' : 'none';
+            setCssProps(rangeContainer, { 'display': importMode.value === 'range' ? 'block' : 'none' });
+            setCssProps(pageSelector, { 'display': importMode.value === 'select' ? 'block' : 'none' });
         });
 
         const buttonContainer = contentEl.createDiv();
@@ -353,7 +353,7 @@ export class ProgressModal extends Modal {
         const { contentEl } = this;
         contentEl.createEl('h2', { text: 'Importing pages' });
         this.statusText = contentEl.createEl('p', { text: 'Starting import...' });
-        this.progressBar = contentEl.createEl('progress') as HTMLProgressElement;
+        this.progressBar = contentEl.createEl('progress');
         setCssProps(this.progressBar, {
             'width': '100%',
             'height': '20px'
@@ -493,7 +493,7 @@ export class ExportModal extends Modal {
         contentEl.createEl('h2', { text: 'Export Viwoods book' });
         contentEl.createEl('p', { text: 'Select a book and export format. This will create a package with all pages and media.' });
 
-        const bookSelect = contentEl.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
+        const bookSelect = contentEl.createEl('select', { cls: 'dropdown' });
         setCssProps(bookSelect, {
             'width': '100%',
             'margin': '10px 0'
@@ -506,7 +506,7 @@ export class ExportModal extends Modal {
         }
 
         contentEl.createEl('label', { text: 'Export format' });
-        const formatSelect = contentEl.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
+        const formatSelect = contentEl.createEl('select', { cls: 'dropdown' });
         setCssProps(formatSelect, {
             'width': '100%',
             'margin': '10px 0'
@@ -517,14 +517,14 @@ export class ExportModal extends Modal {
 
         const optionsDiv = contentEl.createDiv();
         setCssProps(optionsDiv, { 'margin': '15px 0' });
-        const includeAudioCheck = optionsDiv.createEl('input', { type: 'checkbox' }) as HTMLInputElement;
+        const includeAudioCheck = optionsDiv.createEl('input', { type: 'checkbox' });
         includeAudioCheck.id = 'include-audio';
         includeAudioCheck.checked = true;
         const includeAudioLabel = optionsDiv.createEl('label');
         includeAudioLabel.setAttribute('for', 'include-audio');
         includeAudioLabel.textContent = ' Include audio recordings';
         optionsDiv.createEl('br');
-        const includeGeminiCheck = optionsDiv.createEl('input', { type: 'checkbox' }) as HTMLInputElement;
+        const includeGeminiCheck = optionsDiv.createEl('input', { type: 'checkbox' });
         includeGeminiCheck.id = 'include-gemini';
         includeGeminiCheck.checked = true;
         const includeGeminiLabel = optionsDiv.createEl('label');
@@ -548,7 +548,7 @@ export class ExportModal extends Modal {
             const includeGemini = includeGeminiCheck.checked;
             this.close();
             try {
-                this.exportBook(bookPath, format as 'pdf' | 'markdown', includeAudio, includeGemini);
+                this.exportBook(bookPath, format as 'pdf' | 'markdown' | 'html', includeAudio, includeGemini);
                 new Notice('Export completed successfully!');
             } catch (error: unknown) {
                 console.error('Export failed:', error);
@@ -617,8 +617,8 @@ export class ImportModal extends Modal {
         }
 
         contentEl.createEl('h3', { text: 'Select files' });
-        this.fileInput = contentEl.createEl('input', { type: 'file', attr: { multiple: true, accept: '.note,.zip' } }) as HTMLInputElement;
-        this.fileInput.style.marginBottom = '20px';
+        this.fileInput = contentEl.createEl('input', { type: 'file', attr: { multiple: true, accept: '.note,.zip' } });
+        setCssProps(this.fileInput, { 'margin-bottom': '20px' });
 
         const dropArea = contentEl.createDiv({ cls: 'drop-area' });
         setCssProps(dropArea, {
@@ -632,25 +632,27 @@ export class ImportModal extends Modal {
 
         dropArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropArea.style.borderColor = 'var(--interactive-accent)';
+            setCssProps(dropArea, { 'border-color': 'var(--interactive-accent)' });
         });
         dropArea.addEventListener('dragleave', () => {
-            dropArea.style.borderColor = 'var(--background-modifier-border)';
+            setCssProps(dropArea, { 'border-color': 'var(--background-modifier-border)' });
         });
-        dropArea.addEventListener('drop', async (e) => {
+        dropArea.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropArea.style.borderColor = 'var(--background-modifier-border)';
+            setCssProps(dropArea, { 'border-color': 'var(--background-modifier-border)' });
             const files = Array.from(e.dataTransfer?.files || []).filter(f => f.name.endsWith('.note') || f.name.endsWith('.zip'));
             if (files.length > 0) {
-                this.close();
-                for (const file of files) {
-                    try {
-                        await this.plugin.processNoteFile(file);
-                    } catch (error) {
-                        console.error('Failed to process file:', error);
-                        new Notice(`Failed to process ${file.name}`);
+                void (async () => {
+                    this.close();
+                    for (const file of files) {
+                        try {
+                            await this.plugin.processNoteFile(file);
+                        } catch (error) {
+                            console.error('Failed to process file:', error);
+                            new Notice(`Failed to process ${file.name}`);
+                        }
                     }
-                }
+                })();
             }
         });
 
@@ -664,18 +666,20 @@ export class ImportModal extends Modal {
         const cancelBtn = buttonDiv.createEl('button', { text: 'Cancel' });
         const importBtn = buttonDiv.createEl('button', { text: 'Import', cls: 'mod-cta' });
 
-        importBtn.addEventListener('click', async () => {
+        importBtn.addEventListener('click', () => {
             const files = Array.from(this.fileInput.files || []);
             if (files.length > 0) {
-                this.close();
-                for (const file of files) {
-                    try {
-                        await this.plugin.processNoteFile(file);
-                    } catch (error) {
-                        console.error('Failed to process file:', error);
-                        new Notice(`Failed to process ${file.name}`);
+                void (async () => {
+                    this.close();
+                    for (const file of files) {
+                        try {
+                            await this.plugin.processNoteFile(file);
+                        } catch (error) {
+                            console.error('Failed to process file:', error);
+                            new Notice(`Failed to process ${file.name}`);
+                        }
                     }
-                }
+                })();
             } else {
                 new Notice('Please select files to import');
             }

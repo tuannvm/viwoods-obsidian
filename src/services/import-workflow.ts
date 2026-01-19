@@ -42,13 +42,13 @@ export class ImportWorkflow {
         this.importInProgress = true;
         try {
             if (!hasJSZip()) {
-                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                new Notice('JSZip library not loaded. Please restart Obsidian');
                 return;
             }
 
             const jsZip = window.JSZip;
             if (!jsZip) {
-                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                new Notice('JSZip library not loaded. Please restart Obsidian');
                 return;
             }
             const zip = await jsZip.loadAsync(file);
@@ -169,14 +169,14 @@ export class ImportWorkflow {
         this.importInProgress = true;
         try {
             if (!hasJSZip()) {
-                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                new Notice('JSZip library not loaded. Please restart Obsidian');
                 return { success: false, filename: file.name, pagesImported: 0 };
             }
 
             // Parse the .note file
             const jsZip = window.JSZip;
             if (!jsZip) {
-                new Notice('JSZip library not loaded. Please restart Obsidian.');
+                new Notice('JSZip library not loaded. Please restart Obsidian');
                 return { success: false, filename: file.name, pagesImported: 0 };
             }
             const zip = await jsZip.loadAsync(file);
