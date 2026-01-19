@@ -6,8 +6,9 @@ import { ViewerService } from '../services/viewer-service.js';
 import { DragDropHandler } from '../handlers/drag-drop-handler.js';
 import { exportCurrentPageToPDF } from './export-pdf-command.js';
 import { ViwoodsSettingTab } from '../settings.js';
+
 // Minimal interface for plugin to avoid circular dependency
-export interface IViwoodsPlugin {
+export interface IViwoodsPlugin extends Plugin {
     settings: ViwoodsSettings;
     processNoteFile(file: File): Promise<void>;
     saveSettings(): Promise<void>;
@@ -87,6 +88,5 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
     plugin.registerDomEvent(document, 'dragover', (evt: DragEvent) => dragDropHandler.handleDragOver(evt));
 
     // Add settings tab
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ViwoodsSettingTab requires full plugin type
-    plugin.addSettingTab(new ViwoodsSettingTab(app, pluginInstance as any));
+    plugin.addSettingTab(new ViwoodsSettingTab(app, pluginInstance));
 }

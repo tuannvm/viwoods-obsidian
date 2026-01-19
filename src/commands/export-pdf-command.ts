@@ -39,7 +39,7 @@ export async function exportCurrentPageToPDF(
     try {
         const strokeContent = await app.vault.read(strokeFile);
         const strokeData = JSON.parse(strokeContent);
-        await exportSvgToPdf(
+        void exportSvgToPdf(
             strokeData,
             settings.defaultSmoothness,
             settings.backgroundColor,

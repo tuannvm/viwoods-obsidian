@@ -4,7 +4,7 @@ import { App, Notice, Modal, TFolder } from 'obsidian';
 import type { ViwoodsSettings } from '../types.js';
 import { loadManifest, saveManifest, ensureFolder } from '../utils/file-utils.js';
 
-export async function resetBookHashes(app: App, settings: ViwoodsSettings): Promise<void> {
+export function resetBookHashes(app: App, settings: ViwoodsSettings): void {
     const booksFolder = app.vault.getAbstractFileByPath(settings.notesFolder);
     if (!(booksFolder instanceof TFolder)) {
         new Notice('No books found');

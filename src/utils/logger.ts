@@ -32,7 +32,7 @@ export const log = {
 	 */
 	debug: (...args: unknown[]): void => {
 		if (DEBUG_MODE) {
-			console.log('[Viwoods]', ...args);
+			console.debug('[Viwoods]', ...args);
 		}
 	},
 

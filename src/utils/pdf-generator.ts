@@ -149,13 +149,13 @@ export async function generatePdfFromStrokes(
     }
 }
 
-export async function exportSvgToPdf(
+export function exportSvgToPdf(
     strokeData: number[][],
     smoothness: number,
     backgroundColor: string,
     getPenStyleFn: (penId: number) => { color: string, width: number, opacity: number },
     smoothStrokeDataFn: (strokeData: number[][], smoothness: number) => number[][][]
-) {
+): void {
     if (!window.jspdf) {
         new Notice('jsPDF library not loaded');
         return;

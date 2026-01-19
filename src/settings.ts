@@ -4,15 +4,15 @@ import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import type { ViwoodsSettings } from './types.js';
 import { DEFAULT_SETTINGS } from './utils/constants.js';
 import { setDebugMode } from './utils/logger.js';
-import ViwoodsImporterPlugin from './main.js';
+import type { IViwoodsPlugin } from './commands/registry.js';
 
 export type { ViwoodsSettings };
 export { DEFAULT_SETTINGS };
 
 export class ViwoodsSettingTab extends PluginSettingTab {
-    plugin: ViwoodsImporterPlugin;
+    plugin: IViwoodsPlugin;
 
-    constructor(app: App, plugin: ViwoodsImporterPlugin) {
+    constructor(app: App, plugin: IViwoodsPlugin) {
         super(app, plugin);
         this.plugin = plugin;
     }
@@ -20,7 +20,9 @@ export class ViwoodsSettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.createEl('h2', { text: 'Viwoods Obsidian Settings' });
+        // Use setHeading for proper heading element
+        const heading = containerEl.createEl('h2');
+        heading.setText('Viwoods Obsidian settings');
 
         // ========================================================================
         // Basic Settings

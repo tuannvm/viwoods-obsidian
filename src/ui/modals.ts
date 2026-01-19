@@ -57,16 +57,34 @@ export class EnhancedImportModal extends Modal {
         if (this.analysis) {
             const analysisDiv = contentEl.createDiv({ cls: 'import-analysis' });
             analysisDiv.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px; margin-bottom: 15px;';
-            // eslint-disable-next-line @microsoft/sdl/no-inner-html -- Safe: only contains static HTML with numeric counts, no user input
-            analysisDiv.innerHTML = `
-                <h3>📊 Change Analysis</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                    <div>🆕 New pages: <strong>${this.analysis.summary.newPages.length}</strong></div>
-                    <div>🔄 Modified pages: <strong>${this.analysis.summary.modifiedPages.length}</strong></div>
-                    <div>✓ Unchanged pages: <strong>${this.analysis.summary.unchangedPages.length}</strong></div>
-                    <div>❌ Deleted pages: <strong>${this.analysis.summary.deletedPages.length}</strong></div>
-                </div>
-            `;
+
+            // Use safe DOM methods instead of innerHTML
+            const heading = analysisDiv.createEl('h3');
+            heading.textContent = '📊 Change analysis';
+
+            const gridDiv = analysisDiv.createDiv();
+            gridDiv.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;';
+
+            const newPagesDiv = gridDiv.createDiv();
+            newPagesDiv.textContent = `🆕 New pages: ${this.analysis.summary.newPages.length}`;
+            const newPagesStrong = newPagesDiv.createEl('strong');
+            newPagesStrong.textContent = `${this.analysis.summary.newPages.length}`;
+
+            const modifiedPagesDiv = gridDiv.createDiv();
+            modifiedPagesDiv.textContent = `🔄 Modified pages: `;
+            const modifiedPagesStrong = modifiedPagesDiv.createEl('strong');
+            modifiedPagesStrong.textContent = `${this.analysis.summary.modifiedPages.length}`;
+
+            const unchangedPagesDiv = gridDiv.createDiv();
+            unchangedPagesDiv.textContent = `✓ Unchanged pages: `;
+            const unchangedPagesStrong = unchangedPagesDiv.createEl('strong');
+            unchangedPagesStrong.textContent = `${this.analysis.summary.unchangedPages.length}`;
+
+            const deletedPagesDiv = gridDiv.createDiv();
+            deletedPagesDiv.textContent = `❌ Deleted pages: `;
+            const deletedPagesStrong = deletedPagesDiv.createEl('strong');
+            deletedPagesStrong.textContent = `${this.analysis.summary.deletedPages.length}`;
+
             if (this.analysis.summary.deletedPages.length > 0) {
                 analysisDiv.createEl('p', {
                     text: `⚠️ Note: ${this.analysis.summary.deletedPages.length} pages exist locally but not in this import file.`,
@@ -323,22 +341,39 @@ export class ImportSummaryModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Import Complete' });
+        contentEl.createEl('h2', { text: 'Import complete' });
         const summaryDiv = contentEl.createDiv({ cls: 'import-summary' });
         summaryDiv.style.cssText = 'padding: 15px; background: var(--background-secondary); border-radius: 8px;';
-        let summaryHTML = '<h3>📊 Import Summary</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">';
-        if (this.summary.newPages.length > 0) summaryHTML += `<div>🆕 New pages: <strong>${this.summary.newPages.length}</strong></div>`;
-        if (this.summary.modifiedPages.length > 0) summaryHTML += `<div>🔄 Modified pages: <strong>${this.summary.modifiedPages.length}</strong></div>`;
-        if (this.summary.unchangedPages.length > 0) summaryHTML += `<div>✓ Unchanged pages: <strong>${this.summary.unchangedPages.length}</strong></div>`;
-        if (this.summary.errors.length > 0) summaryHTML += `<div style="color: var(--text-error);">❌ Errors: <strong>${this.summary.errors.length}</strong></div>`;
-        summaryHTML += '</div>';
-        // eslint-disable-next-line @microsoft/sdl/no-inner-html -- Safe: only contains static HTML with numeric counts, no user input
-        summaryDiv.innerHTML = summaryHTML;
+
+        // Use safe DOM methods instead of innerHTML
+        const heading = summaryDiv.createEl('h3');
+        heading.textContent = '📊 Import summary';
+
+        const gridDiv = summaryDiv.createDiv();
+        gridDiv.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;';
+
+        if (this.summary.newPages.length > 0) {
+            const newPagesDiv = gridDiv.createDiv();
+            newPagesDiv.textContent = `🆕 New pages: ${this.summary.newPages.length}`;
+        }
+        if (this.summary.modifiedPages.length > 0) {
+            const modifiedPagesDiv = gridDiv.createDiv();
+            modifiedPagesDiv.textContent = `🔄 Modified pages: ${this.summary.modifiedPages.length}`;
+        }
+        if (this.summary.unchangedPages.length > 0) {
+            const unchangedPagesDiv = gridDiv.createDiv();
+            unchangedPagesDiv.textContent = `✓ Unchanged pages: ${this.summary.unchangedPages.length}`;
+        }
+        if (this.summary.errors.length > 0) {
+            const errorsDiv = gridDiv.createDiv();
+            errorsDiv.style.cssText = 'color: var(--text-error);';
+            errorsDiv.textContent = `❌ Errors: ${this.summary.errors.length}`;
+        }
 
         if (this.summary.errors.length > 0) {
             const errorDiv = contentEl.createDiv({ cls: 'import-errors' });
             errorDiv.style.cssText = 'margin-top: 15px; padding: 10px; background: var(--background-secondary-alt); border-radius: 5px;';
-            errorDiv.createEl('h4', { text: 'Import Errors:' });
+            errorDiv.createEl('h4', { text: 'Import errors:' });
             const errorList = errorDiv.createEl('ul');
             this.summary.errors.forEach(error => errorList.createEl('li', { text: `Page ${error.page}: ${error.error}` }));
         }
@@ -375,7 +410,7 @@ export class ExportModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Export Viwoods Book' });
+        contentEl.createEl('h2', { text: 'Export Viwoods book' });
         contentEl.createEl('p', { text: 'Select a book and export format. This will create a package with all pages and media.' });
 
         const bookSelect = contentEl.createEl('select', { cls: 'dropdown' }) as HTMLSelectElement;
@@ -422,7 +457,7 @@ export class ExportModal extends Modal {
             const includeGemini = includeGeminiCheck.checked;
             this.close();
             try {
-                await this.exportBook(bookPath, format as 'pdf' | 'markdown', includeAudio, includeGemini);
+                this.exportBook(bookPath, format as 'pdf' | 'markdown', includeAudio, includeGemini);
                 new Notice('Export completed successfully!');
             } catch (error: unknown) {
                 console.error('Export failed:', error);
@@ -433,7 +468,8 @@ export class ExportModal extends Modal {
         cancelBtn.onclick = () => this.close();
     }
 
-    async exportBook(_bookPath: string, format: 'markdown' | 'pdf' | 'html', _includeAudio: boolean, _includeGemini: boolean) {
+    exportBook(_bookPath: string, format: 'markdown' | 'pdf' | 'html', _includeAudio: boolean, _includeGemini: boolean): void {
+        // Export functionality placeholder
         new Notice(`Export functionality for ${format} format would be implemented here`);
     }
 
@@ -458,12 +494,12 @@ export class ImportModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Import Viwoods Note' });
+        contentEl.createEl('h2', { text: 'Import Viwoods note' });
         contentEl.createEl('p', { text: 'Select .note files to import. Each file may contain multiple pages that will be organized into a book structure.' });
 
         const recentDiv = contentEl.createDiv();
         recentDiv.style.cssText = 'margin: 15px 0; padding: 10px; background: var(--background-secondary); border-radius: 5px;';
-        recentDiv.createEl('h3', { text: 'Recent Books' });
+        recentDiv.createEl('h3', { text: 'Recent books' });
 
         const booksFolder = this.app.vault.getAbstractFileByPath(this.plugin.settings.notesFolder);
         if (booksFolder instanceof TFolder) {
@@ -481,7 +517,7 @@ export class ImportModal extends Modal {
             }
         }
 
-        contentEl.createEl('h3', { text: 'Select Files' });
+        contentEl.createEl('h3', { text: 'Select files' });
         this.fileInput = contentEl.createEl('input', { type: 'file', attr: { multiple: true, accept: '.note,.zip' } }) as HTMLInputElement;
         this.fileInput.style.marginBottom = '20px';
 
@@ -502,7 +538,14 @@ export class ImportModal extends Modal {
             const files = Array.from(e.dataTransfer?.files || []).filter(f => f.name.endsWith('.note') || f.name.endsWith('.zip'));
             if (files.length > 0) {
                 this.close();
-                for (const file of files) await this.plugin.processNoteFile(file);
+                for (const file of files) {
+                    try {
+                        await this.plugin.processNoteFile(file);
+                    } catch (error) {
+                        console.error('Failed to process file:', error);
+                        new Notice(`Failed to process ${file.name}`);
+                    }
+                }
             }
         });
 
@@ -515,7 +558,14 @@ export class ImportModal extends Modal {
             const files = Array.from(this.fileInput.files || []);
             if (files.length > 0) {
                 this.close();
-                for (const file of files) await this.plugin.processNoteFile(file);
+                for (const file of files) {
+                    try {
+                        await this.plugin.processNoteFile(file);
+                    } catch (error) {
+                        console.error('Failed to process file:', error);
+                        new Notice(`Failed to process ${file.name}`);
+                    }
+                }
             } else {
                 new Notice('Please select files to import');
             }

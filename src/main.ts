@@ -111,7 +111,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
         }
     }
 
-    async onunload() {
+    onunload(): void {
         // Stop auto-sync on unload
         if (this.autoSyncService) {
             this.autoSyncService.stop();
@@ -168,7 +168,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
             if (this.settings.syncOnStartup) {
                 // Use setTimeout directly for initial scan, not registerInterval
                 window.setTimeout(() => {
-                    this.autoSyncService?.scanForChanges();
+                    void this.autoSyncService?.scanForChanges();
                 }, 5000);
             }
         }
@@ -204,7 +204,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
             checkCallback: (checking) => {
                 const sourceFolderPath = resolveSourceFolderPath(this.settings);
                 if (this.settings.enableAutoSync && sourceFolderPath) {
-                    if (!checking) this.autoSyncService?.scanForChanges();
+                    if (!checking) void this.autoSyncService?.scanForChanges();
                     return true;
                 }
                 return false;
@@ -216,7 +216,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
             checkCallback: (checking) => {
                 const pendingCount = this.autoSyncService?.getPendingChangesCount() || 0;
                 if (pendingCount > 0) {
-                    if (!checking) this.autoSyncService?.importDetectedChanges();
+                    if (!checking) void this.autoSyncService?.importDetectedChanges();
                     return true;
                 }
                 return false;
@@ -236,14 +236,14 @@ export default class ViwoodsImporterPlugin extends Plugin {
             checkCallback: (checking) => {
                 if (!checking) {
                     this.settings.enableAutoSync = !this.settings.enableAutoSync;
-                    this.saveSettings();
+                    void this.saveSettings();
                     if (this.settings.enableAutoSync) {
                         if (!resolveSourceFolderPath(this.settings)) {
                             new Notice('Please set a source folder in settings first');
                             this.settings.enableAutoSync = false;
-                            this.saveSettings();
+                            void this.saveSettings();
                         } else {
-                            this.autoSyncService?.start();
+                            void this.autoSyncService?.start();
                             new Notice('Auto-sync enabled');
                         }
                     } else {

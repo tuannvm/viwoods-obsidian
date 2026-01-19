@@ -101,7 +101,7 @@ class DesktopFileAccess implements FileAccessImpl {
     /**
      * Test if a path is accessible (for debugging)
      */
-    async testPathAccess(testPath: string): Promise<{ accessible: boolean; error?: string; type?: string }> {
+    testPathAccess(testPath: string): { accessible: boolean; error?: string; type?: string } {
         this.ensureInitialized();
 
         try {
@@ -181,30 +181,28 @@ class DesktopFileAccess implements FileAccessImpl {
         }
     }
 
-    async readFileAsBlob(filePath: string): Promise<Blob> {
+    readFileAsBlob(filePath: string): Promise<Blob> {
         this.ensureInitialized();
 
         try {
             const normalizedPath = this.normalizePath(filePath);
-             
             const buffer = this.fs!.readFileSync(normalizedPath);
-            return new Blob([buffer]);
+            return Promise.resolve(new Blob([buffer]));
         } catch (error) {
             log.error('Error reading file:', error);
             throw new Error(`Failed to read file: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
-    async validatePath(folderPath: string): Promise<boolean> {
+    validatePath(folderPath: string): Promise<boolean> {
         this.ensureInitialized();
 
         try {
             const normalizedPath = this.normalizePath(folderPath);
-             
             const stats = this.fs!.statSync(normalizedPath);
-            return stats.isDirectory();
+            return Promise.resolve(stats.isDirectory());
         } catch {
-            return false;
+            return Promise.resolve(false);
         }
     }
 }

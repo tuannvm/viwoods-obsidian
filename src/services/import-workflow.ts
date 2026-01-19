@@ -93,7 +93,6 @@ export class ImportWorkflow {
                 bookResult,
                 pagesToImport,
                 existingManifest,
-                manifestPath,
                 async (summary, manifest) => {
                     const historyMessage = `Imported ${summary.newPages.length} new, ${summary.modifiedPages.length} modified pages`;
                     addHistoryEntry(manifest, 'import', pagesToImport, historyMessage, 10); // Default history entries

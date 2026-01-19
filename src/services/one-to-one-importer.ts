@@ -257,7 +257,7 @@ export class OneToOneImporter {
     /**
      * Check if a note file already exists
      */
-    async noteExists(bookName: string): Promise<boolean> {
+    noteExists(bookName: string): boolean {
         const filepath = `${this.settings.notesFolder}/${bookName}.md`;
         return this.app.vault.getAbstractFileByPath(filepath) instanceof TFile;
     }

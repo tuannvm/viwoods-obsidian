@@ -39,7 +39,6 @@ export class PageProcessor {
         bookResult: BookResult,
         pagesToImport: number[],
         existingManifest: ImportManifest | null,
-        manifestPath: string,
         onImportComplete: (summary: ImportSummary, manifest: ImportManifest) => Promise<void>
     ): Promise<ImportSummary> {
         const bookFolder = `${this.settings.notesFolder}/${bookResult.bookName}`;
@@ -128,7 +127,7 @@ export class PageProcessor {
             }
 
             // Build page content
-            const pageContent = await this.buildPageContent(bookResult, page, pageNum, manifest, isNew, isModified, bookFolder);
+            const pageContent = this.buildPageContent(bookResult, page, pageNum, manifest, isModified);
 
             // Save the markdown file
             const pageFileName = `Page ${String(pageNum).padStart(3, '0')}.md`;
@@ -251,15 +250,13 @@ export class PageProcessor {
         }
     }
 
-    private async buildPageContent(
+    private buildPageContent(
         bookResult: BookResult,
         page: PageData,
         pageNum: number,
         manifest: ImportManifest,
-        isNew: boolean,
-        isModified: boolean,
-        bookFolder: string
-    ): Promise<string> {
+        isModified: boolean
+    ): string {
         let pageContent = '';
 
         // 1. Metadata (frontmatter)

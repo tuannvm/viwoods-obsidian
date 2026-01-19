@@ -119,7 +119,7 @@ export class AutoSyncService {
             this.pollingIntervalId = null;
         }
 
-        this.saveState();
+        void this.saveState();
         new Notice('Viwoods auto-sync disabled');
         log.debug('Auto-sync service stopped');
     }

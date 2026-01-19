@@ -1,5 +1,6 @@
 {
   "enabledPlugins": {
-    "obsidian@obsidian-skills": true
+    "obsidian@obsidian-skills": true,
+    "code-simplifier@claude-plugins-official": true
   }
 }
