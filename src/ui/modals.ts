@@ -511,9 +511,9 @@ export class ExportModal extends Modal {
             'width': '100%',
             'margin': '10px 0'
         });
-        formatSelect.createEl('option', { value: 'markdown', text: 'Markdown with media (ZIP)' });
-        formatSelect.createEl('option', { value: 'pdf', text: 'PDF (single file)' });
-        formatSelect.createEl('option', { value: 'html', text: 'HTML (standalone)' });
+        formatSelect.createEl('option', { value: 'markdown', text: 'Markdown with media (zip)' });
+        formatSelect.createEl('option', { value: 'pdf', text: 'pdf (single file)' });
+        formatSelect.createEl('option', { value: 'html', text: 'html (standalone)' });
 
         const optionsDiv = contentEl.createDiv();
         setCssProps(optionsDiv, { 'margin': '15px 0' });
