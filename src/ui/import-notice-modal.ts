@@ -53,7 +53,7 @@ export class ImportNoticeModal extends Modal {
 
         // Import All button
         new ButtonComponent(buttonContainer)
-            .setButtonText('Import All')
+            .setButtonText('Import all')
             .setCta()
             .onClick(() => {
                 this.onAction({ action: 'import' });
@@ -62,7 +62,7 @@ export class ImportNoticeModal extends Modal {
 
         // View Details button
         new ButtonComponent(buttonContainer)
-            .setButtonText('View Details')
+            .setButtonText('View details')
             .onClick(() => {
                 this.onAction({ action: 'view' });
                 this.close();

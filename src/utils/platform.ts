@@ -3,6 +3,11 @@
 import { Platform } from 'obsidian';
 import type { ViwoodsSettings } from '../types.js';
 
+// Dynamically import Node.js modules (desktop only)
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+let nodeModules: { fs: typeof import('fs'); path: typeof import('path') } | null = null;
+let nodeModulesLoaded = false;
+
 /**
  * Get the current platform type
  * @returns 'desktop' for Electron-based Obsidian, 'mobile' for Capacitor-based
@@ -102,12 +107,19 @@ export function getNodeModules(): { fs: typeof import('fs'); path: typeof import
         return null;
     }
 
+    if (nodeModulesLoaded) {
+        return nodeModules;
+    }
+
+    nodeModulesLoaded = true;
+
     try {
-         
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const fs = require('fs');
-         
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const path = require('path');
-        return { fs, path };
+        nodeModules = { fs, path };
+        return nodeModules;
     } catch (error) {
         console.error('Failed to load Node.js modules:', error);
         return null;
