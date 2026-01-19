@@ -22,7 +22,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
         containerEl.empty();
         new Setting(containerEl)
             .setHeading()
-            .setName('Viwoods Obsidian Settings');
+            .setName('Viwoods Obsidian settings');
 
         // ========================================================================
         // Basic Settings

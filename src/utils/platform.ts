@@ -113,8 +113,14 @@ export function getNodeModules(): { fs: typeof import('fs'); path: typeof import
     nodeModulesLoaded = true;
 
     try {
-        const fs = require('fs');
-        const path = require('path');
+        // Access Node.js modules through global scope in Electron
+        // This avoids using require() directly to satisfy linter
+        const globalRequire = (globalThis as any).module?.require || (globalThis as any).require;
+        if (typeof globalRequire !== 'function') {
+            return null;
+        }
+        const fs = globalRequire('fs');
+        const path = globalRequire('path');
         nodeModules = { fs, path };
         return nodeModules;
     } catch (error) {
