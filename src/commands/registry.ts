@@ -58,7 +58,7 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
 
     plugin.addCommand({
         id: 'export-page-to-pdf',
-        name: 'Export current page to pdf',
+        name: 'Export current page to PDF',
         editorCallback: async (_editor, view) => {
             const markdownView = view instanceof MarkdownView ? view : app.workspace.getActiveViewOfType(MarkdownView);
             if (markdownView) {

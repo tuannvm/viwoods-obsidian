@@ -200,7 +200,7 @@ export default class ViwoodsImporterPlugin extends Plugin {
     registerSyncCommands(): void {
         this.addCommand({
             id: 'viwoods-scan-folder',
-            name: 'Scan Viwoods folder for changes',
+            name: 'Scan viwoods folder for changes',
             checkCallback: (checking) => {
                 const sourceFolderPath = resolveSourceFolderPath(this.settings);
                 if (this.settings.enableAutoSync && sourceFolderPath) {

@@ -190,7 +190,7 @@ export class ViewerService {
             'border-radius': '4px'
         });
 
-        const pdfBtn = btnGroup.createEl('button', { text: 'pdf' });
+        const pdfBtn = btnGroup.createEl('button', { text: 'PDF' });
         setCssProps(pdfBtn, {
             'padding': '6px 12px',
             'cursor': 'pointer',
@@ -325,7 +325,7 @@ export class ViewerService {
         const exportPDF = async () => {
             try {
                 if (!window.jspdf) {
-                    new Notice('jspdf library not loaded');
+                    new Notice('Jspdf library not loaded');
                     return;
                 }
 

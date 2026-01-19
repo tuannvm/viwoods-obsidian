@@ -15,10 +15,10 @@ export class SourceFolderPickerModal extends Modal {
     onOpen() {
         const { contentEl } = this;
         contentEl.empty();
-        contentEl.createEl('h2', { text: 'Set Viwoods source folder path' });
-        contentEl.createEl('p', { text: 'Enter the path to the folder containing your Viwoods .note files.' });
+        contentEl.createEl('h2', { text: 'Set viwoods source folder path' });
+        contentEl.createEl('p', { text: 'Enter the path to the folder containing your viwoods .note files.' });
         this.inputEl = contentEl.createEl('input', { type: 'text' });
-        this.inputEl.placeholder = '/Users/username/Documents/Viwoods';
+        this.inputEl.placeholder = '/users/username/documents/viwoods';
         setCssProps(this.inputEl, { 'width': '100%', 'margin': '15px 0', 'padding': '8px' });
         const buttonContainer = contentEl.createEl('div');
         setCssProps(buttonContainer, { 'display': 'flex', 'gap': '10px', 'justify-content': 'flex-end' });

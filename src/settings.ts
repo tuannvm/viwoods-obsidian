@@ -32,7 +32,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
             .setName('Source folder (fallback)')
             .setDesc('Used when a platform-specific path is not set or on mobile')
             .addText(text => text
-                .setPlaceholder('/Users/username/Documents/Viwoods')
+                .setPlaceholder('/users/username/documents/viwoods')
                 .setValue(this.plugin.settings.sourceFolderPath)
                 .onChange(async (value) => {
                     this.plugin.settings.sourceFolderPath = value;
@@ -43,7 +43,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
             .setName('Source folder (Windows)')
             .setDesc('Used on Windows desktop when set')
             .addText(text => text
-                .setPlaceholder('C:\\Users\\username\\Documents\\Viwoods')
+                .setPlaceholder('C:\\users\\username\\documents\\viwoods')
                 .setValue(this.plugin.settings.sourceFolderPathWindows)
                 .onChange(async (value) => {
                     this.plugin.settings.sourceFolderPathWindows = value;
@@ -54,7 +54,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
             .setName('Source folder (macOS)')
             .setDesc('Used on macOS desktop when set')
             .addText(text => text
-                .setPlaceholder('/Users/username/Documents/Viwoods')
+                .setPlaceholder('/users/username/documents/viwoods')
                 .setValue(this.plugin.settings.sourceFolderPathMacos)
                 .onChange(async (value) => {
                     this.plugin.settings.sourceFolderPathMacos = value;
@@ -65,7 +65,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
             .setName('Source folder (Linux)')
             .setDesc('Used on Linux desktop when set')
             .addText(text => text
-                .setPlaceholder('/home/username/Documents/Viwoods')
+                .setPlaceholder('/home/username/documents/viwoods')
                 .setValue(this.plugin.settings.sourceFolderPathLinux)
                 .onChange(async (value) => {
                     this.plugin.settings.sourceFolderPathLinux = value;
@@ -76,7 +76,7 @@ export class ViwoodsSettingTab extends PluginSettingTab {
             .setName('Destination folder (in Obsidian)')
             .setDesc('Root folder for imported notes in your vault')
             .addText(text => text
-                .setPlaceholder('Viwoods Notes')
+                .setPlaceholder('Viwoods notes')
                 .setValue(this.plugin.settings.notesFolder)
                 .onChange(async (value) => {
                     this.plugin.settings.notesFolder = value;

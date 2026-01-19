@@ -119,7 +119,8 @@ export function getNodeModules(): { fs: typeof import('fs'); path: typeof import
             module?: { require: (id: string) => typeof import('fs') | typeof import('path') };
             require?: (id: string) => typeof import('fs') | typeof import('path');
         }
-        const globalRequire = (globalThis as GlobalRequire).module?.require || (globalThis as GlobalRequire).require;
+        type NodeRequire = (id: string) => typeof import('fs') | typeof import('path');
+        const globalRequire: NodeRequire | undefined = ((globalThis as GlobalRequire).module?.require || (globalThis as GlobalRequire).require) as NodeRequire | undefined;
         if (typeof globalRequire !== 'function') {
             return null;
         }
