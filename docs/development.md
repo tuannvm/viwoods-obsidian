@@ -178,6 +178,9 @@ Then reload Obsidian and enable the plugin in **Settings → Community plugins**
 - Test on iOS and Android before releases
 - Use File System Access API for cross-platform file access
 
+## OCR (macOS Only)
+
+OCR runs locally using Apple Vision via an embedded Swift script. It requires macOS desktop and the Swift toolchain (Xcode Command Line Tools).
 ## Performance Guidelines
 
 - Keep startup light

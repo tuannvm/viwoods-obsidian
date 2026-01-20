@@ -8,10 +8,11 @@ import type {
     ViwoodsSettings,
     PageData
 } from '../types.js';
-import { formatDate, ensureFolder } from '../utils/file-utils.js';
+import { ensureFolder } from '../utils/file-utils.js';
 import { processImageWithBackground } from '../utils/image-utils.js';
 import { strokesToSVG } from '../utils/svg-generator.js';
 import { log } from '../utils/logger.js';
+import { OCRService } from './ocr-service.js';
 
 // Progress modal interface (from ui/modals.ts)
 interface ProgressModal {
@@ -25,6 +26,7 @@ type ProgressModalConstructor = new (app: App, totalPages: number) => ProgressMo
 export class PageProcessor {
     private progressModal: ProgressModal | null;
     private ProgressModalClass: ProgressModalConstructor;
+    private ocrService: OCRService;
 
     constructor(
         private app: App,
@@ -33,6 +35,7 @@ export class PageProcessor {
     ) {
         this.ProgressModalClass = ProgressModalClass;
         this.progressModal = null;
+        this.ocrService = OCRService.getInstance();
     }
 
     async importSelectedPages(
@@ -121,13 +124,21 @@ export class PageProcessor {
             else if (isModified) summary.modifiedPages.push(pageNum);
             else summary.unchangedPages.push(pageNum);
 
+            // Perform OCR if enabled (before building content)
+            let ocrText: string | undefined;
+            if (this.settings.enableOcr && (isNew || isModified || !manifest.importedPages[pageNum]?.ocrProcessed)) {
+                ocrText = await this.performOCR(page);
+            } else if (manifest.importedPages[pageNum]?.ocrText) {
+                ocrText = manifest.importedPages[pageNum].ocrText;
+            }
+
             // Save stroke data
             if (page.stroke) {
                 await this.saveStrokeData(page.stroke, bookResult.bookName, pageNum, strokesFolder, isNew || isModified);
             }
 
             // Build page content
-            const pageContent = this.buildPageContent(bookResult, page, pageNum, manifest, isModified);
+            const pageContent = await this.buildPageContent(bookResult, page, pageNum, manifest, isNew, isModified, bookFolder, ocrText);
 
             // Save the markdown file
             const pageFileName = `Page ${String(pageNum).padStart(3, '0')}.md`;
@@ -160,6 +171,8 @@ export class PageProcessor {
                 importDate: new Date().toISOString(),
                 imageHash: page.image.hash,
                 geminiProcessed: manifest.importedPages[pageNum]?.geminiProcessed || false,
+                ocrProcessed: !!ocrText,
+                ocrText: ocrText,
                 hasAudio: !!page.audio,
                 lastModified: new Date().toISOString(),
                 size: page.image.blob.size,
@@ -250,61 +263,85 @@ export class PageProcessor {
         }
     }
 
-    private buildPageContent(
+    /**
+     * Perform OCR on a page's image
+     */
+    private async performOCR(page: PageData): Promise<string | undefined> {
+        if (!this.ocrService.isAvailable()) {
+            log.debug('OCR not available, skipping OCR for page', page.pageNum);
+            return undefined;
+        }
+
+        try {
+            log.debug('Performing OCR on page', page.pageNum);
+            const result = await this.ocrService.performOCROnBlob(page.image.blob, {
+                languages: this.settings.ocrLanguages,
+                confidenceThreshold: this.settings.ocrConfidenceThreshold
+            });
+
+            if (result.success && result.text.trim().length > 0) {
+                log.debug('OCR succeeded for page', page.pageNum, 'text length:', result.text.length);
+                return result.text;
+            } else {
+                log.debug('OCR returned no text for page', page.pageNum, 'confidence:', result.confidence);
+                return undefined;
+            }
+        } catch (error) {
+            log.warn(`OCR failed for page ${page.pageNum}:`, error);
+            return undefined;
+        }
+    }
+
+    private async buildPageContent(
         bookResult: BookResult,
         page: PageData,
         pageNum: number,
         manifest: ImportManifest,
-        isModified: boolean
-    ): string {
+        isNew: boolean,
+        isModified: boolean,
+        bookFolder: string,
+        ocrText?: string
+    ): Promise<string> {
         let pageContent = '';
 
-        // 1. Metadata (frontmatter)
+        // 1. Metadata (frontmatter) - match one-to-one-importer format
         if (this.settings.includeMetadata) {
             pageContent += '---\n';
-            pageContent += `book: "${bookResult.bookName}"\n`;
-            pageContent += `page: ${pageNum}\n`;
+            pageContent += `title: ${bookResult.bookName}\n`;
+            pageContent += `source: ${bookResult.bookName}.note\n`;
             pageContent += `total_pages: ${manifest.totalPages}\n`;
-            pageContent += `original_image_hash: "${page.image.hash}"\n`;
+            pageContent += `viwoods: true\n`;
+
             if (this.settings.includeTimestamps) {
-                const createTime = bookResult.metadata.createTime || bookResult.metadata.creationTime;
-                const updateTime = bookResult.metadata.upTime || bookResult.metadata.lastModifiedTime;
-                if (typeof createTime === 'number') pageContent += `book_created: ${formatDate(createTime, this.settings.dateFormat)}\n`;
-                if (typeof updateTime === 'number') pageContent += `book_updated: ${formatDate(updateTime, this.settings.dateFormat)}\n`;
+                pageContent += `created: ${new Date().toISOString()}\n`;
+                pageContent += `modified: ${new Date().toISOString()}\n`;
             }
-            pageContent += `import_date: ${new Date().toISOString()}\n`;
-            if (isModified) pageContent += `last_modified: ${new Date().toISOString()}\n`;
-            if (page.audio) pageContent += 'has_audio: true\n';
-            if (page.stroke) pageContent += 'has_strokes: true\n';
-            const imageName = `${bookResult.bookName}_page_${String(pageNum).padStart(3, '0')}.png`;
-            pageContent += `image: "${imageName}"\n`;
-            const bookTag = bookResult.bookName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-_]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
-            pageContent += 'tags: [viwoods-import, handwritten, ' + bookTag + ']\n';
+
             pageContent += '---\n\n';
         }
 
-        // 2. Audio (if exists)
-        if (page.audio) {
-            pageContent += `## 🎙️ Audio Recording\n\n`;
-            pageContent += `![[${page.audio.name}]]\n\n`;
-            pageContent += '---\n\n';
+        // 2. Table of Contents
+        pageContent += '# Table of Contents\n\n';
+        for (const p of bookResult.pages) {
+            pageContent += `- [[#Page ${p.pageNum}]]\n`;
         }
+        pageContent += '\n---\n\n';
 
-        // 3. Original Image
+        // 3. Page content with transclusion format
+        pageContent += `## Page ${pageNum}\n\n`;
+
+        // 4. Original Image using transclusion format
         if (this.settings.outputFormat === 'png' || this.settings.outputFormat === 'both') {
             const imageName = `${bookResult.bookName}_page_${String(pageNum).padStart(3, '0')}.png`;
-            pageContent += `## Original Image\n\n`;
-            pageContent += `![[${imageName}]]\n\n`;
+            const imagePath = `${this.settings.imagesFolder}/${imageName}`;
+            pageContent += `![Page ${pageNum}](<${imagePath}>)\n\n`;
         }
 
-        // 4. SVG Viewer (if enabled and has strokes)
-        if (this.settings.enableSvgViewer && page.stroke) {
-            pageContent += `## Vector Viewer\n\n`;
-            const strokeFileName = `${bookResult.bookName}_page_${String(pageNum).padStart(3, '0')}_strokes.json`;
-            pageContent += `\`\`\`viwoods-svg\n${strokeFileName}\n\`\`\`\n\n`;
-
-            const pdfName = `${bookResult.bookName}_page_${String(pageNum).padStart(3, '0')}.pdf`;
-            pageContent += `**Rendered Export**: [[${this.settings.pdfFolder}/${pdfName}]]\n\n`;
+        // 5. OCR Text (if enabled and available)
+        if (ocrText && ocrText.trim().length > 0) {
+            pageContent += `## Extracted Text (OCR)\n\n`;
+            pageContent += `${ocrText}\n\n`;
+            pageContent += '---\n\n';
         }
 
         return pageContent;

@@ -1,6 +1,6 @@
 // tests/utils.test.ts - Unit tests for utility functions
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DEFAULT_SETTINGS } from '../src/utils/constants.js';
 import { resolveSourceFolderPath } from '../src/utils/platform.js';
 
@@ -134,5 +134,134 @@ describe('Logger', () => {
 		global.console.error = originalError;
 
 		expect(consoleSpy.error).toHaveBeenCalledWith('[Viwoods]', 'test error');
+	});
+});
+
+// ============================================================================
+// OCR Tests
+// ============================================================================
+
+describe('OCR Service', () => {
+	describe('OCR Settings', () => {
+		it('should have OCR settings in DEFAULT_SETTINGS', () => {
+			expect(DEFAULT_SETTINGS).toHaveProperty('enableOcr');
+			expect(DEFAULT_SETTINGS).toHaveProperty('ocrLanguages');
+			expect(DEFAULT_SETTINGS).toHaveProperty('ocrConfidenceThreshold');
+		});
+
+		it('should have correct default OCR settings', () => {
+			expect(DEFAULT_SETTINGS.enableOcr).toBe(false);
+			expect(DEFAULT_SETTINGS.ocrLanguages).toEqual(['en-US']);
+			expect(DEFAULT_SETTINGS.ocrConfidenceThreshold).toBe(0.5);
+		});
+
+		it('should have valid confidence threshold range', () => {
+			expect(DEFAULT_SETTINGS.ocrConfidenceThreshold).toBeGreaterThanOrEqual(0);
+			expect(DEFAULT_SETTINGS.ocrConfidenceThreshold).toBeLessThanOrEqual(1);
+		});
+
+		it('should have valid language codes', () => {
+			expect(DEFAULT_SETTINGS.ocrLanguages.length).toBeGreaterThan(0);
+			expect(DEFAULT_SETTINGS.ocrLanguages[0]).toMatch(/^[a-z]{2}-[A-Z]{2}$/);
+		});
+	});
+
+	describe('OCR Service Module', () => {
+		it('should be importable', async () => {
+			const ocrModule = await import('../src/services/ocr-service.js');
+			expect(ocrModule).toBeDefined();
+			expect(ocrModule).toHaveProperty('OCRService');
+		});
+
+		it('should export convenience functions', async () => {
+			const ocrModule = await import('../src/services/ocr-service.js');
+			expect(ocrModule).toHaveProperty('isOCRAvailable');
+			expect(ocrModule).toHaveProperty('getOCRStatus');
+			expect(ocrModule).toHaveProperty('ocrImage');
+			expect(ocrModule).toHaveProperty('ocrBlob');
+		});
+
+		it('should provide singleton instance', async () => {
+			const { OCRService } = await import('../src/services/ocr-service.js');
+			const instance1 = OCRService.getInstance();
+			const instance2 = OCRService.getInstance();
+			expect(instance1).toBe(instance2);
+		});
+	});
+
+	describe('OCR Availability', () => {
+		it('should report availability status', async () => {
+			const { isOCRAvailable, getOCRStatus } = await import('../src/services/ocr-service.js');
+			const available = isOCRAvailable();
+			const status = getOCRStatus();
+
+			expect(typeof available).toBe('boolean');
+			expect(typeof status).toBe('string');
+
+			// In non-macOS environments, should not be available
+			if (!process.platform === 'darwin') {
+				expect(available).toBe(false);
+				expect(status).toContain('macOS');
+			}
+		});
+	});
+
+	describe('OCR Service Methods', () => {
+		it('should have isAvailable method', async () => {
+			const { OCRService } = await import('../src/services/ocr-service.js');
+			const service = OCRService.getInstance();
+			expect(typeof service.isAvailable).toBe('function');
+		});
+
+		it('should have getAvailabilityMessage method', async () => {
+			const { OCRService } = await import('../src/services/ocr-service.js');
+			const service = OCRService.getInstance();
+			expect(typeof service.getAvailabilityMessage).toBe('function');
+		});
+
+		it('should have performOCR method', async () => {
+			const { OCRService } = await import('../src/services/ocr-service.js');
+			const service = OCRService.getInstance();
+			expect(typeof service.performOCR).toBe('function');
+		});
+
+		it('should have isScriptReady method', async () => {
+			const { OCRService } = await import('../src/services/ocr-service.js');
+			const service = OCRService.getInstance();
+			expect(typeof service.isScriptReady).toBe('function');
+		});
+	});
+
+	describe('OCR Result Type', () => {
+		it('should have correct OCRResult structure', async () => {
+			const result = {
+				success: true,
+				text: 'Sample text',
+				confidence: 0.95,
+				errors: [],
+				processingTimeMs: 100
+			};
+
+			expect(result).toHaveProperty('success');
+			expect(result).toHaveProperty('text');
+			expect(result).toHaveProperty('confidence');
+			expect(result).toHaveProperty('errors');
+			expect(result).toHaveProperty('processingTimeMs');
+		});
+
+		it('should handle failed OCR result', async () => {
+			const result = {
+				success: false,
+				text: '',
+				confidence: 0.0,
+				errors: ['Image file not found'],
+				processingTimeMs: 0
+			};
+
+			expect(result.success).toBe(false);
+			expect(result.text).toBe('');
+			expect(result.confidence).toBe(0.0);
+			expect(result.errors.length).toBeGreaterThan(0);
+		});
 	});
 });

@@ -86,12 +86,19 @@ Configure sync behavior in **Settings → Viwoods Obsidian**:
 | **Sync on startup** | Check for changes when Obsidian starts |
 | **Show notifications** | Show notifications when changes are detected |
 
+### OCR (macOS Only)
+| Setting | Description |
+|---------|-------------|
+| **Enable OCR** | Extract handwritten text using Apple Vision (macOS desktop; requires Swift/Xcode Command Line Tools) |
+| **OCR Languages** | Comma-separated language codes (e.g., en-US, zh-Hans) |
+| **OCR Confidence Threshold** | Minimum confidence for OCR results (0.0–1.0) |
+
 ### Debug
 | Setting | Description |
 |---------|-------------|
 | **Enable debug logging** | Enable debug logging to console (for troubleshooting) |
 
-> **Note:** Auto-sync requires desktop Obsidian. Imported notes can be viewed on any platform (desktop/mobile).
+> **Note:** Auto-sync requires desktop Obsidian. OCR is macOS-only and requires Swift/Xcode Command Line Tools. Imported notes can be viewed on any platform (desktop/mobile).
 
 ## Cloud Sync Integration
 
@@ -159,6 +166,7 @@ Viwoods (v3.6+) supports built-in sync to Google Drive, OneDrive, and Dropbox. S
 - [Development](docs/development.md) - Build system, coding conventions, and testing
 - [Contributing](docs/contributing.md) - Contribution guidelines
 - [Releases](docs/releases.md) - Release process and versioning
+- [OCR](docs/ocr.md) - OCR feature details and requirements
 
 ## Roadmap
 

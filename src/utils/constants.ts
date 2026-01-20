@@ -45,7 +45,12 @@ export const DEFAULT_SETTINGS: ViwoodsSettings = {
     maxHistoryEntries: 10,
 
     // PDF export
-    enablePdfExport: false
+    enablePdfExport: false,
+
+    // OCR settings
+    enableOcr: false,
+    ocrLanguages: ['en-US'],
+    ocrConfidenceThreshold: 0.5
 };
 
 // Auto-sync constants

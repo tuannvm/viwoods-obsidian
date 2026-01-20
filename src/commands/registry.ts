@@ -1,10 +1,11 @@
 // commands/registry.ts - Centralized command registration for Viwoods Obsidian
 
-import { Plugin, MarkdownView, App } from 'obsidian';
+import { Plugin, MarkdownView, App, Notice } from 'obsidian';
 import type { ViwoodsSettings, PenMappings } from '../types.js';
 import { ViewerService } from '../services/viewer-service.js';
 import { DragDropHandler } from '../handlers/drag-drop-handler.js';
 import { exportCurrentPageToPDF } from './export-pdf-command.js';
+import { runOCROnAllNotes, runOCROnCurrentNote } from './run-ocr-command.js';
 import { ViwoodsSettingTab } from '../settings.js';
 
 // Minimal interface for plugin to avoid circular dependency
@@ -63,6 +64,43 @@ export function registerCommands(plugin: Plugin, deps: CommandRegistryDependenci
             const markdownView = view instanceof MarkdownView ? view : app.workspace.getActiveViewOfType(MarkdownView);
             if (markdownView) {
                 await exportCurrentPageToPDF(app, settings, penMappings, markdownView);
+            }
+        }
+    });
+
+    // OCR Commands
+    plugin.addCommand({
+        id: 'run-ocr-current-note',
+        name: 'Run OCR on current note',
+        checkCallback: (checking: boolean) => {
+            const activeFile = app.workspace.getActiveFile();
+            if (activeFile && activeFile.extension === 'md') {
+                if (!checking) {
+                    runOCROnCurrentNote(app, settings).then(result => {
+                        if (result.error) {
+                            new Notice(result.error);
+                        } else if (result.textExtracted) {
+                            new Notice('OCR text extracted and added to note');
+                        } else {
+                            new Notice('No text found or already processed');
+                        }
+                    });
+                }
+                return true;
+            }
+            return false;
+        }
+    });
+
+    plugin.addCommand({
+        id: 'run-ocr-all-notes',
+        name: 'Run OCR on all Viwoods notes',
+        callback: async () => {
+            const summary = await runOCROnAllNotes(app, settings);
+            const message = `OCR completed: ${summary.processedNotes}/${summary.totalNotes} notes processed`;
+            new Notice(message);
+            if (summary.errors.length > 0) {
+                console.log('OCR errors:', summary.errors);
             }
         }
     });

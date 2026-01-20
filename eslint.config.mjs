@@ -12,6 +12,7 @@ export default tseslint.config(
 			"main.js",
 			"main.js.map",
 			"tests/**",
+			"trash/**",
 		],
 	},
 	{
@@ -53,7 +54,7 @@ export default tseslint.config(
 
 			// Obsidian-specific - Be pragmatic
 			"obsidianmd/ui/sentence-case": ["error", {
-				"brands": ["Viwoods", "JSZip", "jsPDF", "Windows", "Linux", "Obsidian", "macOS", "Gemini"],
+				"brands": ["Viwoods", "JSZip", "jsPDF", "Windows", "Linux", "Obsidian", "macOS", "Gemini", "OCR", "Apple Vision", "Swift", "Xcode"],
 				"ignoreRegex": ["^/.+", "^[A-Z]:\\\\.+", "^. to ."]
 			}],  // Temporarily enabled to verify plugin review fixes
 			"obsidianmd/no-static-styles-assignment": "off",
