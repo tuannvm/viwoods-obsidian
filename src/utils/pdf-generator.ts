@@ -157,7 +157,7 @@ export function exportSvgToPdf(
     smoothStrokeDataFn: (strokeData: number[][], smoothness: number) => number[][][]
 ): void {
     if (!window.jspdf) {
-        new Notice('Jspdf library not loaded');
+        new Notice('jsPDF library not loaded');
         return;
     }
     const { jsPDF } = window.jspdf;

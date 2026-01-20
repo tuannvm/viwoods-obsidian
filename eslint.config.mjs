@@ -52,7 +52,10 @@ export default tseslint.config(
 			"@typescript-eslint/no-non-null-assertion": "off",
 
 			// Obsidian-specific - Be pragmatic
-			"obsidianmd/ui/sentence-case": "error",  // Temporarily enabled to verify plugin review fixes
+			"obsidianmd/ui/sentence-case": ["error", {
+				"brands": ["Viwoods", "JSZip", "jsPDF", "Windows", "Linux", "Obsidian", "macOS", "Gemini"],
+				"ignoreRegex": ["^/.+", "^[A-Z]:\\\\.+", "^. to ."]
+			}],  // Temporarily enabled to verify plugin review fixes
 			"obsidianmd/no-static-styles-assignment": "off",
 			"obsidianmd/settings-tab/no-manual-html-headings": "off",
 			"obsidianmd/platform": "off",

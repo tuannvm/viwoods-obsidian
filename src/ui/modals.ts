@@ -172,7 +172,7 @@ export class EnhancedImportModal extends Modal {
         rangeFrom.min = '1';
         rangeFrom.max = this.bookResult.pages.length.toString();
         rangeFrom.value = '1';
-        rangeContainer.createEl('span', { text: ' To ' });
+        rangeContainer.createEl('span', { text: ' – ' });
         const rangeTo = rangeContainer.createEl('input', { type: 'number' });
         setCssProps(rangeTo, { 'width': '60px' });
         rangeTo.min = '1';
@@ -490,7 +490,7 @@ export class ExportModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Export viwoods notes' });
+        contentEl.createEl('h2', { text: 'Export Viwoods notes' });
         contentEl.createEl('p', { text: 'Select a book and export format. This will create a package with all pages and media.' });
 
         const bookSelect = contentEl.createEl('select', { cls: 'dropdown' });
@@ -529,7 +529,7 @@ export class ExportModal extends Modal {
         includeGeminiCheck.checked = true;
         const includeGeminiLabel = optionsDiv.createEl('label');
         includeGeminiLabel.setAttribute('for', 'include-gemini');
-        includeGeminiLabel.textContent = ' Include gemini transcription';
+        includeGeminiLabel.textContent = ' Include Gemini transcription';
 
         const buttonDiv = contentEl.createDiv();
         setCssProps(buttonDiv, {
@@ -585,7 +585,7 @@ export class ImportModal extends Modal {
 
     onOpen() {
         const { contentEl } = this;
-        contentEl.createEl('h2', { text: 'Import viwoods notes' });
+        contentEl.createEl('h2', { text: 'Import Viwoods notes' });
         contentEl.createEl('p', { text: 'Select .note files to import. Each file may contain multiple pages that will be organized into a book structure.' });
 
         const recentDiv = contentEl.createDiv();
